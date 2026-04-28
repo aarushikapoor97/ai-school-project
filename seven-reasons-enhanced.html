@@ -933,6 +933,18 @@
       <div class="chat-header-name">Lucia · Dining Concierge</div>
       <div class="chat-header-status">Online · powered by AI</div>
     </div>
+    <button onclick="onChangeApiKey()" style="background:rgba(201,151,43,0.12); border:1px solid var(--border); border-radius:20px; color:var(--muted); font-size:11px; padding:4px 10px; cursor:pointer; font-family:'Outfit',sans-serif; white-space:nowrap;">🔑 Key</button>
+  </div>
+  <div id="api-key-card" style="display:none; margin:12px 14px 0; padding:16px; background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); flex-shrink:0;">
+    <div style="font-size:11px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">🔑 Anthropic API Key</div>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:10px; line-height:1.5;">Enter your key to activate Lucia. Saved locally in your browser.</div>
+    <div style="display:flex; gap:8px;">
+      <input id="api-key-input" type="password" placeholder="sk-ant-api03-..."
+        style="flex:1; background:var(--black); border:1px solid var(--border); border-radius:22px; padding:10px 14px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--cream); outline:none;"
+        onkeydown="if(event.key==='Enter') onSaveApiKey()"
+      />
+      <button onclick="onSaveApiKey()" style="background:var(--gold); color:var(--black); border:none; border-radius:22px; padding:10px 16px; font-family:'Outfit',sans-serif; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;">Save</button>
+    </div>
   </div>
   <div class="chat-messages" id="chat-messages">
     <div class="msg bot">
@@ -988,7 +1000,7 @@ function navigate(s) {
     if(n.onclick && n.onclick.toString().includes("'"+s+"'")) n.classList.add('active');
   });
   window.scrollTo(0,0);
-  if(s==='chat') document.getElementById('chat-messages').scrollTop = 9999;
+  if(s==='chat') { document.getElementById('chat-messages').scrollTop = 9999; checkApiKeyCard(); }
 }
 
 function showToast(msg) {
@@ -1082,6 +1094,33 @@ function setRating(n) {
   showToast('⭐ '.repeat(n).trim() + ' — Thanks for rating!');
 }
 
+// ======= API KEY MANAGEMENT =======
+function getApiKey() {
+  return localStorage.getItem('sr_api_key') || '';
+}
+function saveApiKey(key) {
+  localStorage.setItem('sr_api_key', key.trim());
+}
+
+function checkApiKeyCard() {
+  const card = document.getElementById('api-key-card');
+  if (card) card.style.display = getApiKey() ? 'none' : 'block';
+}
+
+function onSaveApiKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val) { showToast('⚠️ Please enter a valid API key'); return; }
+  saveApiKey(val);
+  document.getElementById('api-key-card').style.display = 'none';
+  document.getElementById('api-key-input').value = '';
+  showToast('🔑 API key saved!');
+}
+
+function onChangeApiKey() {
+  document.getElementById('api-key-card').style.display = 'block';
+  document.getElementById('api-key-input').focus();
+}
+
 // ======= AI CHATBOT =======
 const LUCIA_SYSTEM = `You are Lucia, the warm and knowledgeable AI dining concierge for Seven Reasons restaurant in Washington DC. Seven Reasons is an acclaimed Latin-inspired restaurant founded by Venezuelan-born Chef Enrique Limardo. It's Michelin-recommended and James Beard-recognized. The restaurant group also includes Imperfecto, Surreal Global Kitchen, and Quadrant Bar & Lounge.
 
@@ -1098,6 +1137,11 @@ Be warm, knowledgeable, and personalized. Keep replies concise (2-4 sentences ma
 let chatHistory = [];
 
 async function sendChat() {
+  if (!getApiKey()) {
+    checkApiKeyCard();
+    showToast('🔑 Please save your API key first');
+    return;
+  }
   const input = document.getElementById('chat-input');
   const msg = input.value.trim();
   if(!msg) return;
@@ -1110,9 +1154,14 @@ async function sendChat() {
     chatHistory.push({role:'user', content: msg});
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': getApiKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-request-in-browser': 'true'
+      },
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-haiku-4-5',
         max_tokens:1000,
         system: LUCIA_SYSTEM,
         messages: chatHistory
