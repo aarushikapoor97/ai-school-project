@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Seven Reasons — Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0A0804;
+    --deep: #110D06;
+    --charcoal: #1C1610;
+    --gold: #C9972B;
+    --gold-light: #E2B96A;
+    --gold-pale: #F5E8C8;
+    --crimson: #8B1C2A;
+    --terracotta: #C4613A;
+    --cream: #F4ECD8;
+    --muted: #7A6E5E;
+    --border: rgba(201,151,43,0.18);
+    --radius: 18px;
+    --radius-sm: 12px;
+    --green: #4A8A52;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'Outfit',sans-serif; background:#000; min-height:100vh; display:flex; justify-content:center; }
+  .phone { width:100%; max-width:420px; min-height:100vh; background:var(--black); position:relative; overflow:hidden; display:flex; flex-direction:column; }
+  .screen { display:none; flex-direction:column; min-height:100vh; animation:fadeIn 0.4s ease; }
+  .screen.active { display:flex; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* STATUS */
+  .status-bar { display:flex; justify-content:space-between; align-items:center; padding:10px 22px 4px; font-size:12px; font-weight:500; color:var(--muted); }
+  .status-bar .time { font-weight:600; font-size:14px; color:var(--cream); }
+
+  /* ===== SPLASH ===== */
+  #screen-splash { background:var(--black); justify-content:center; align-items:center; position:relative; overflow:hidden; }
+  #screen-splash::before { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:320px; height:320px; background:radial-gradient(circle, rgba(201,151,43,0.12) 0%, transparent 70%); border-radius:50%; animation:pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.2)} }
+  .splash-inner { display:flex; flex-direction:column; align-items:center; gap:12px; z-index:1; animation:splashIn 1s ease; }
+  @keyframes splashIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+  .splash-numeral { font-family:'Cormorant Garamond',serif; font-size:100px; font-weight:300; color:var(--gold); line-height:1; text-shadow:0 0 60px rgba(201,151,43,0.4); }
+  .splash-name { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:400; letter-spacing:6px; color:var(--cream); text-transform:uppercase; text-align:center; }
+  .splash-sub { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+  .splash-line { width:40px; height:1px; background:var(--gold); opacity:0.5; margin:8px 0; }
+
+  /* ===== ONBOARDING ===== */
+  #screen-onboarding { background:var(--black); }
+  .onboard-top { flex:1; display:flex; flex-direction:column; justify-content:center; padding:48px 28px 32px; gap:28px; }
+  .onboard-label { font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); }
+  .onboard-headline { font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:300; color:var(--cream); line-height:1.15; }
+  .onboard-headline em { font-style:italic; color:var(--gold-light); }
+  .onboard-body { font-size:14px; color:var(--muted); line-height:1.7; }
+  .perks-list { display:flex; flex-direction:column; gap:14px; }
+  .perk { display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border-radius:var(--radius-sm); border:1px solid var(--border); background:rgba(255,255,255,0.02); animation:slideUp 0.5s ease both; }
+  .perk:nth-child(2){animation-delay:.1s} .perk:nth-child(3){animation-delay:.2s} .perk:nth-child(4){animation-delay:.3s}
+  @keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .perk-icon { font-size:22px; margin-top:1px; }
+  .perk strong { display:block; font-size:14px; font-weight:600; color:var(--cream); }
+  .perk span { font-size:12px; color:var(--muted); line-height:1.5; }
+  .onboard-actions { padding:16px 28px 44px; display:flex; flex-direction:column; gap:10px; }
+  .btn-gold { background:var(--gold); color:var(--black); border:none; padding:16px 24px; border-radius:50px; font-family:'Outfit',sans-serif; font-size:15px; font-weight:600; cursor:pointer; width:100%; letter-spacing:0.5px; transition:all 0.2s; box-shadow:0 4px 20px rgba(201,151,43,0.3); }
+  .btn-gold:active { transform:scale(0.97); }
+  .btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); padding:14px 24px; border-radius:50px; font-family:'Outfit',sans-serif; font-size:14px; cursor:pointer; width:100%; }
+
+  /* ===== NAV ===== */
+  .nav-bar { display:flex; justify-content:space-around; align-items:center; padding:10px 0 22px; background:var(--charcoal); border-top:1px solid var(--border); flex-shrink:0; position:sticky; bottom:0; }
+  .nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; cursor:pointer; padding:6px 0; }
+  .nav-icon { font-size:20px; transition:transform 0.2s; }
+  .nav-label { font-size:10px; font-weight:500; color:var(--muted); letter-spacing:0.5px; }
+  .nav-item.active .nav-label { color:var(--gold); }
+  .nav-item.active .nav-icon { transform:scale(1.1); }
+
+  /* ===== HOME ===== */
+  .home-top { background:linear-gradient(180deg, var(--charcoal) 0%, var(--black) 100%); padding:20px 22px 24px; position:relative; overflow:hidden; }
+  .home-top::after { content:'7'; font-family:'Cormorant Garamond',serif; font-size:180px; font-weight:300; color:rgba(201,151,43,0.06); position:absolute; right:-10px; top:-30px; line-height:1; pointer-events:none; }
+  .home-greeting { font-size:12px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+  .home-greeting strong { color:var(--cream); text-transform:none; letter-spacing:0; }
+  .home-row { display:flex; justify-content:space-between; align-items:flex-start; }
+  .home-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; color:var(--cream); line-height:1.2; }
+  .home-title em { font-style:italic; color:var(--gold-light); }
+  .notif-btn { width:38px; height:38px; background:rgba(201,151,43,0.12); border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; cursor:pointer; flex-shrink:0; position:relative; color:var(--cream); transition:all 0.2s; }
+  .notif-dot { position:absolute; top:7px; right:7px; width:7px; height:7px; background:var(--gold); border-radius:50%; border:1.5px solid var(--charcoal); }
+
+  /* Points card */
+  .points-card { margin:0 18px; position:relative; background:linear-gradient(135deg, #1E1608 0%, #2A1E0A 50%, #1A1206 100%); border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px 18px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.5); }
+  .points-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+  .card-logo { font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); }
+  .card-tier { display:flex; align-items:center; gap:5px; background:rgba(201,151,43,0.12); border:1px solid rgba(201,151,43,0.25); border-radius:20px; padding:4px 10px; font-size:11px; color:var(--gold); font-weight:600; letter-spacing:0.5px; }
+  .card-pts-label { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .card-pts-val { font-family:'Cormorant Garamond',serif; font-size:58px; font-weight:300; color:var(--gold-light); line-height:1; }
+  .card-pts-sub { font-size:12px; color:var(--muted); margin-top:4px; }
+  .card-bar-wrap { margin-top:14px; }
+  .card-bar-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px; }
+  .card-bar-bg { height:4px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+  .card-bar-fill { height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius:10px; width:72%; transition:width 1.2s ease; }
+  .card-name { font-size:13px; color:rgba(244,236,216,0.5); margin-top:12px; letter-spacing:0.5px; }
+
+  /* Home content */
+  .home-content { padding:22px 18px; flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:24px; }
+  .section-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .section-title { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .section-link { font-size:12px; color:var(--gold); cursor:pointer; }
+
+  /* Restaurants strip */
+  .rest-strip { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+  .rest-strip::-webkit-scrollbar { display:none; }
+  .rest-pill { flex-shrink:0; padding:9px 16px; border-radius:30px; cursor:pointer; border:1px solid var(--border); background:var(--charcoal); color:var(--muted); font-size:13px; font-weight:500; transition:all 0.2s; white-space:nowrap; }
+  .rest-pill:active { transform:scale(0.96); }
+  .rest-pill.featured { border-color:var(--gold); color:var(--gold); }
+
+  /* Mood bar — NEW */
+  .mood-bar { display:flex; gap:8px; padding:0 0 2px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .mood-bar::-webkit-scrollbar { display:none; }
+  .mood-chip { flex-shrink:0; padding:8px 14px; border-radius:24px; border:1px solid var(--border); background:var(--charcoal); color:var(--muted); font-size:12px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
+  .mood-chip.selected { background:rgba(201,151,43,0.15); border-color:var(--gold); color:var(--gold); }
+
+  /* Visit streak */
+  .streak-card { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); padding:18px 18px; display:flex; gap:14px; align-items:center; }
+  .streak-num { font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:300; color:var(--gold); line-height:1; flex-shrink:0; min-width:52px; }
+  .streak-text { flex:1; }
+  .streak-label { font-size:14px; font-weight:500; color:var(--cream); }
+  .streak-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .streak-days { display:flex; gap:5px; margin-top:10px; }
+  .s-day { width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); font-weight:500; }
+  .s-day.done { background:rgba(201,151,43,0.15); border-color:var(--gold); color:var(--gold); }
+  .s-day.today { background:var(--gold); color:var(--black); border-color:var(--gold); box-shadow:0 0 12px rgba(201,151,43,0.4); }
+
+  /* Reward preview */
+  .reward-preview { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px 18px; display:flex; gap:14px; align-items:center; cursor:pointer; transition:all 0.2s; margin-bottom:10px; }
+  .reward-preview:active { transform:scale(0.98); }
+  .reward-preview:last-child { margin-bottom:0; }
+  .rp-icon { font-size:32px; flex-shrink:0; }
+  .rp-info { flex:1; }
+  .rp-name { font-size:15px; font-weight:500; color:var(--cream); }
+  .rp-rest { font-size:11px; color:var(--muted); margin-top:1px; letter-spacing:0.5px; text-transform:uppercase; }
+  .rp-pts { display:flex; align-items:center; gap:8px; margin-top:8px; }
+  .pts-badge { background:rgba(201,151,43,0.12); border:1px solid rgba(201,151,43,0.25); color:var(--gold); font-size:12px; font-weight:600; padding:3px 10px; border-radius:20px; }
+  .pts-ok { color:#6BAA75; font-size:11px; font-weight:500; }
+  .pts-need { color:var(--muted); font-size:11px; }
+
+  /* Chef story card — NEW */
+  .chef-card { border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; cursor:pointer; background:var(--charcoal); transition:all 0.2s; }
+  .chef-card:active { transform:scale(0.98); }
+  .chef-banner { height:120px; background:linear-gradient(135deg, #2A1608 0%, #4A2010 60%, #1A100A 100%); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .chef-banner::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 70% 40%, rgba(201,151,43,0.15), transparent 60%); }
+  .chef-avatar { font-size:52px; z-index:1; }
+  .chef-body { padding:14px 16px; }
+  .chef-tag { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
+  .chef-name-big { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; color:var(--cream); }
+  .chef-quote { font-size:12px; color:var(--muted); line-height:1.6; margin-top:6px; font-style:italic; }
+
+  /* Event card — NEW */
+  .event-card { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; display:flex; gap:14px; cursor:pointer; transition:all 0.2s; margin-bottom:10px; }
+  .event-card:active { transform:scale(0.98); }
+  .event-date { flex-shrink:0; width:46px; text-align:center; }
+  .event-month { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); }
+  .event-day { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; color:var(--cream); line-height:1; }
+  .event-info { flex:1; }
+  .event-name { font-size:14px; font-weight:500; color:var(--cream); }
+  .event-detail { font-size:12px; color:var(--muted); margin-top:3px; }
+  .event-badge { display:inline-block; font-size:10px; background:rgba(201,151,43,0.12); border:1px solid rgba(201,151,43,0.25); color:var(--gold); padding:2px 8px; border-radius:10px; margin-top:6px; }
+
+  /* ===== ORDER ===== */
+  .order-top { background:var(--charcoal); padding:20px 22px 20px; border-bottom:1px solid var(--border); }
+  .order-top h2 { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; color:var(--cream); }
+  .order-top p { font-size:12px; color:var(--muted); margin-top:3px; letter-spacing:0.5px; }
+  .rest-selector { display:flex; gap:8px; overflow-x:auto; padding:14px 18px 0; -webkit-overflow-scrolling:touch; }
+  .rest-selector::-webkit-scrollbar { display:none; }
+  .rs-tab { flex-shrink:0; padding:7px 14px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--charcoal); color:var(--muted); transition:all 0.2s; white-space:nowrap; }
+  .rs-tab.active { background:var(--gold); color:var(--black); border-color:var(--gold); }
+  .menu-section-lbl { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); padding:16px 18px 8px; }
+  .order-scroll { flex:1; overflow-y:auto; }
+  .dish-card { margin:0 18px 10px; padding:16px; background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); display:flex; gap:14px; cursor:pointer; transition:all 0.2s; }
+  .dish-card:active { transform:scale(0.98); }
+  .dish-emoji { font-size:32px; flex-shrink:0; margin-top:2px; }
+  .dish-info { flex:1; }
+  .dish-name { font-size:15px; font-weight:500; color:var(--cream); }
+  .dish-desc { font-size:12px; color:var(--muted); margin-top:3px; line-height:1.5; }
+  .dish-footer { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+  .dish-price { font-size:16px; font-weight:600; color:var(--cream); }
+  .dish-pts-earn { font-size:11px; color:var(--gold); letter-spacing:0.5px; }
+  .add-btn { width:32px; height:32px; border-radius:50%; background:var(--gold); color:var(--black); border:none; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:600; transition:all 0.2s; flex-shrink:0; }
+  .dish-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .dish-tag { font-size:10px; padding:2px 7px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:var(--muted); }
+  .dish-tag.spicy { border-color:rgba(196,97,58,0.3); color:var(--terracotta); background:rgba(196,97,58,0.08); }
+  .dish-tag.veg { border-color:rgba(74,138,82,0.3); color:#6BAA75; background:rgba(74,138,82,0.08); }
+  .dish-tag.chef { border-color:rgba(201,151,43,0.3); color:var(--gold); background:rgba(201,151,43,0.08); }
+
+  /* Filter bar */
+  .menu-filter { display:flex; gap:8px; padding:10px 18px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .menu-filter::-webkit-scrollbar { display:none; }
+  .mf-btn { flex-shrink:0; padding:6px 13px; border-radius:16px; font-size:12px; font-weight:500; border:1px solid var(--border); background:var(--charcoal); color:var(--muted); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .mf-btn.active { background:rgba(201,151,43,0.15); border-color:rgba(201,151,43,0.4); color:var(--gold); }
+
+  /* Cart bar */
+  .cart-bar { margin:0 18px 10px; padding:14px 18px; background:var(--gold); border-radius:50px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:all 0.2s; display:none; }
+  .cart-bar.visible { display:flex; }
+  .cart-bar:active { transform:scale(0.98); }
+  .cart-info { display:flex; flex-direction:column; }
+  .cart-count { font-size:13px; font-weight:600; color:var(--black); }
+  .cart-total { font-size:12px; color:rgba(10,8,4,0.6); }
+  .cart-cta { font-size:15px; font-weight:700; color:var(--black); }
+
+  /* ===== REWARDS ===== */
+  .rewards-top { background:var(--charcoal); padding:20px 22px 20px; border-bottom:1px solid var(--border); }
+  .rewards-top h2 { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; color:var(--cream); }
+  .rewards-top p { font-size:12px; color:var(--muted); margin-top:3px; }
+  .mini-card { margin:16px 18px 0; background:linear-gradient(135deg, #1E1608 0%, #2A1E0A 100%); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 18px; display:flex; justify-content:space-between; }
+  .mini-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
+  .mini-pts { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; color:var(--gold-light); }
+  .mini-right { text-align:right; }
+  .mini-tier { font-size:18px; font-weight:600; color:var(--gold); }
+  .tier-progress { margin:10px 18px 0; }
+  .tier-row { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .tier-cur { color:var(--cream); font-weight:500; }
+  .tier-bg { height:4px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+  .tier-fill { height:100%; width:72%; background:linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius:10px; }
+  .rewards-scroll { flex:1; overflow-y:auto; }
+  .rw-filter { display:flex; gap:8px; padding:12px 18px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .rw-filter::-webkit-scrollbar { display:none; }
+  .rf-btn { flex-shrink:0; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:500; border:1px solid var(--border); background:var(--charcoal); color:var(--muted); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .rf-btn.active { background:rgba(201,151,43,0.15); border-color:rgba(201,151,43,0.4); color:var(--gold); }
+  .rw-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 18px 16px; }
+  .rw-tile { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px 14px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+  .rw-tile:active { transform:scale(0.96); }
+  .rw-tile.locked { opacity:0.6; }
+  .rw-lock { position:absolute; top:10px; right:10px; font-size:12px; }
+  .rw-redeem { position:absolute; top:8px; right:8px; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--green); font-weight:600; }
+  .rw-emoji { font-size:28px; margin-bottom:8px; }
+  .rw-name { font-size:13px; font-weight:500; color:var(--cream); line-height:1.3; }
+  .rw-venue { font-size:10px; color:var(--muted); margin-top:3px; text-transform:uppercase; letter-spacing:0.5px; }
+  .rw-pts { font-size:13px; font-weight:600; color:var(--gold); margin-top:8px; }
+
+  /* ===== PROFILE ===== */
+  .profile-top { background:linear-gradient(180deg, var(--charcoal) 0%, var(--black) 100%); padding:24px 22px 28px; text-align:center; border-bottom:1px solid var(--border); }
+  .avatar { width:72px; height:72px; border-radius:50%; background:rgba(201,151,43,0.15); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:34px; margin:0 auto 12px; }
+  .p-name { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:400; color:var(--cream); }
+  .p-email { font-size:12px; color:var(--muted); margin-top:2px; }
+  .p-chips { display:flex; gap:8px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+  .p-chip { font-size:11px; padding:4px 10px; border-radius:20px; background:rgba(201,151,43,0.1); border:1px solid var(--border); color:var(--gold); }
+  .profile-scroll { flex:1; overflow-y:auto; padding:16px 18px; display:flex; flex-direction:column; gap:16px; }
+  .stat-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .stat-card { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 10px; text-align:center; }
+  .stat-val { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; color:var(--gold-light); }
+  .stat-lbl { font-size:10px; color:var(--muted); margin-top:2px; letter-spacing:0.5px; text-transform:uppercase; }
+  .history-list { display:flex; flex-direction:column; gap:8px; }
+  .hist-item { display:flex; gap:12px; align-items:center; padding:12px 14px; background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); }
+  .hist-icon { font-size:22px; flex-shrink:0; }
+  .hist-info { flex:1; }
+  .hist-name { font-size:13px; font-weight:500; color:var(--cream); }
+  .hist-date { font-size:11px; color:var(--muted); margin-top:1px; }
+  .hist-pts { font-size:14px; font-weight:600; color:var(--gold); flex-shrink:0; }
+  .menu-list { display:flex; flex-direction:column; gap:4px; }
+  .menu-row { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; transition:all 0.2s; }
+  .menu-row:active { background:rgba(201,151,43,0.06); }
+  .mr-left { display:flex; align-items:center; gap:12px; }
+  .mr-icon { font-size:20px; }
+  .mr-text { font-size:14px; color:var(--cream); }
+  .mr-arrow { font-size:18px; color:var(--muted); }
+
+  /* ===== CHATBOT ===== */
+  #screen-chat { background:var(--black); }
+  .chat-header { background:var(--charcoal); padding:16px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; flex-shrink:0; }
+  .chat-avatar { width:40px; height:40px; border-radius:50%; background:rgba(201,151,43,0.15); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .chat-header-info { flex:1; }
+  .chat-header-name { font-size:16px; font-weight:600; color:var(--cream); }
+  .chat-header-status { font-size:11px; color:var(--green); display:flex; align-items:center; gap:4px; }
+  .chat-header-status::before { content:''; width:6px; height:6px; background:var(--green); border-radius:50%; display:inline-block; }
+  .chat-messages { flex:1; overflow-y:auto; padding:16px 14px; display:flex; flex-direction:column; gap:12px; }
+  .msg { display:flex; flex-direction:column; max-width:84%; }
+  .msg.user { align-self:flex-end; align-items:flex-end; }
+  .msg.bot { align-self:flex-start; align-items:flex-start; }
+  .msg-bubble { padding:12px 15px; border-radius:18px; font-size:14px; line-height:1.5; }
+  .msg.user .msg-bubble { background:var(--gold); color:var(--black); border-bottom-right-radius:4px; }
+  .msg.bot .msg-bubble { background:var(--charcoal); color:var(--cream); border:1px solid var(--border); border-bottom-left-radius:4px; }
+  .msg-time { font-size:10px; color:var(--muted); margin-top:3px; }
+  .chat-suggestions { display:flex; gap:7px; padding:8px 14px; overflow-x:auto; -webkit-overflow-scrolling:touch; flex-shrink:0; }
+  .chat-suggestions::-webkit-scrollbar { display:none; }
+  .chat-suggestion { flex-shrink:0; padding:8px 13px; border-radius:18px; border:1px solid var(--border); background:var(--charcoal); color:var(--cream); font-size:12px; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+  .chat-suggestion:active { background:rgba(201,151,43,0.12); border-color:var(--gold); }
+  .chat-input-row { display:flex; gap:8px; padding:10px 14px 16px; align-items:flex-end; flex-shrink:0; border-top:1px solid var(--border); }
+  .chat-input { flex:1; background:var(--charcoal); border:1px solid var(--border); border-radius:22px; padding:11px 16px; font-family:'Outfit',sans-serif; font-size:14px; color:var(--cream); outline:none; resize:none; max-height:80px; line-height:1.4; }
+  .chat-input::placeholder { color:var(--muted); }
+  .chat-send { width:40px; height:40px; border-radius:50%; background:var(--gold); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; transition:all 0.2s; }
+  .chat-send:active { transform:scale(0.92); }
+  .typing-indicator { display:flex; gap:4px; padding:12px 15px; background:var(--charcoal); border:1px solid var(--border); border-radius:18px; border-bottom-left-radius:4px; width:fit-content; }
+  .typing-dot { width:6px; height:6px; background:var(--muted); border-radius:50%; animation:typingBounce 1.2s ease-in-out infinite; }
+  .typing-dot:nth-child(2){animation-delay:0.2s} .typing-dot:nth-child(3){animation-delay:0.4s}
+  @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+  /* ===== EXPLORE (new screen) ===== */
+  #screen-explore { background:var(--black); }
+  .explore-header { background:var(--charcoal); padding:20px 22px; border-bottom:1px solid var(--border); }
+  .explore-header h2 { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; color:var(--cream); }
+  .explore-header p { font-size:12px; color:var(--muted); margin-top:3px; }
+  .explore-scroll { flex:1; overflow-y:auto; padding:16px 18px; display:flex; flex-direction:column; gap:20px; }
+  .explore-section-title { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+
+  /* Ingredient story card */
+  .ingredient-card { border-radius:var(--radius-sm); border:1px solid var(--border); overflow:hidden; cursor:pointer; background:var(--charcoal); transition:all 0.2s; display:flex; }
+  .ingredient-card:active { transform:scale(0.98); }
+  .ingr-color { width:6px; flex-shrink:0; }
+  .ingr-body { padding:14px 16px; flex:1; }
+  .ingr-emoji { font-size:22px; margin-bottom:6px; }
+  .ingr-name { font-size:14px; font-weight:500; color:var(--cream); }
+  .ingr-origin { font-size:11px; color:var(--gold); letter-spacing:1px; margin-top:2px; }
+  .ingr-desc { font-size:12px; color:var(--muted); line-height:1.5; margin-top:6px; }
+
+  /* Rating section */
+  .rate-card { background:var(--charcoal); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+  .rate-title { font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--cream); margin-bottom:4px; }
+  .rate-sub { font-size:12px; color:var(--muted); margin-bottom:16px; }
+  .rate-stars { display:flex; gap:8px; margin-bottom:16px; }
+  .rate-star { font-size:28px; cursor:pointer; opacity:0.3; transition:all 0.2s; filter:grayscale(1); }
+  .rate-star.active { opacity:1; filter:grayscale(0); transform:scale(1.1); }
+  .rate-aspects { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+  .rate-aspect { display:flex; justify-content:space-between; align-items:center; }
+  .rate-aspect-name { font-size:13px; color:var(--muted); }
+  .rate-dots { display:flex; gap:5px; }
+  .rate-dot { width:22px; height:6px; border-radius:3px; background:rgba(255,255,255,0.08); cursor:pointer; transition:all 0.2s; }
+  .rate-dot.filled { background:var(--gold); }
+
+  /* Photo upload */
+  .photo-upload { border:1.5px dashed var(--border); border-radius:var(--radius-sm); padding:20px; text-align:center; cursor:pointer; transition:all 0.2s; }
+  .photo-upload:active { border-color:var(--gold); background:rgba(201,151,43,0.05); }
+  .photo-upload p { font-size:13px; color:var(--muted); margin-top:8px; }
+  .photo-upload .pu-icon { font-size:28px; }
+
+  /* ===== MODAL ===== */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s; max-width:420px; }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal-sheet { background:var(--charcoal); border-radius:24px 24px 0 0; border:1px solid var(--border); border-bottom:none; padding:16px 24px 40px; width:100%; transform:translateY(20px); transition:transform 0.3s; }
+  .modal-overlay.open .modal-sheet { transform:translateY(0); }
+  .modal-handle { width:36px; height:4px; background:rgba(255,255,255,0.12); border-radius:4px; margin:0 auto 20px; }
+  .modal-emoji { font-size:48px; text-align:center; margin-bottom:8px; }
+  .modal-venue { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); text-align:center; margin-bottom:8px; }
+  .modal-title { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:400; color:var(--cream); text-align:center; margin-bottom:8px; }
+  .modal-desc { font-size:14px; color:var(--muted); text-align:center; line-height:1.6; margin-bottom:16px; }
+  .modal-pts-wrap { display:flex; flex-direction:column; align-items:center; margin-bottom:20px; }
+  .modal-pts-val { font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:300; color:var(--gold-light); }
+  .modal-pts-lbl { font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; }
+  .modal-actions { display:flex; flex-direction:column; gap:8px; }
+
+  /* ===== TOAST ===== */
+  .toast { position:fixed; bottom:120px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--charcoal); border:1px solid var(--border); color:var(--cream); padding:12px 20px; border-radius:50px; font-size:13px; font-weight:500; white-space:nowrap; opacity:0; transition:all 0.3s; z-index:300; max-width:340px; text-align:center; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* Scrollbar hide */
+  ::-webkit-scrollbar { display:none; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- SPLASH -->
+<div class="screen active" id="screen-splash">
+  <div class="splash-inner">
+    <div class="splash-numeral">7</div>
+    <div class="splash-line"></div>
+    <div class="splash-name">Seven Reasons</div>
+    <div class="splash-sub">Latin-inspired · Washington DC</div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="screen" id="screen-onboarding">
+  <div class="status-bar"><span class="time">9:41</span><span>📶 🔋</span></div>
+  <div class="onboard-top">
+    <div class="onboard-label">Welcome to Seven Reasons</div>
+    <div class="onboard-headline">Your dining journey,<br><em>elevated.</em></div>
+    <div class="onboard-body">Join our loyalty experience and earn points, unlock exclusive events, and get a personal AI dining concierge.</div>
+    <div class="perks-list">
+      <div class="perk">
+        <div class="perk-icon">✦</div>
+        <div><strong>Earn & Redeem Points</strong><span>10 pts per $1 across all four venues</span></div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🤖</div>
+        <div><strong>AI Dining Concierge</strong><span>Personalized menu guidance, reservations & more</span></div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🎭</div>
+        <div><strong>Exclusive Events</strong><span>Chef's dinners, tasting events & private access</span></div>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">🌎</div>
+        <div><strong>Culinary Stories</strong><span>Explore the ingredients behind every dish</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="onboard-actions">
+    <button class="btn-gold" onclick="navigate('home')">Join the Journey</button>
+    <button class="btn-ghost" onclick="navigate('home')">I already have an account</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="screen-home">
+  <div class="status-bar"><span class="time">9:41</span><span>📶 🔋</span></div>
+  <div class="home-top">
+    <div class="home-greeting">Good evening, <strong>Alex</strong></div>
+    <div class="home-row">
+      <div class="home-title">Tonight's<br><em>experience</em><br>awaits</div>
+      <button class="notif-btn" onclick="showToast('🔔 3 new notifications')">🔔<div class="notif-dot"></div></button>
+    </div>
+  </div>
+
+  <div style="padding:16px 18px 0">
+    <div class="points-card">
+      <div class="card-top">
+        <div class="card-logo">Seven Reasons</div>
+        <div class="card-tier">✦ Gold</div>
+      </div>
+      <div class="card-pts-label">Points Balance</div>
+      <div class="card-pts-val">720</div>
+      <div class="card-pts-sub">280 pts away from Platinum</div>
+      <div class="card-bar-wrap">
+        <div class="card-bar-labels"><span>Gold</span><span>Platinum at 1,000</span></div>
+        <div class="card-bar-bg"><div class="card-bar-fill"></div></div>
+      </div>
+      <div class="card-name">Alex Chen · Member since Jan 2024</div>
+    </div>
+  </div>
+
+  <div class="home-content">
+
+    <!-- How are you feeling tonight? -->
+    <div>
+      <div class="section-hd"><div class="section-title">Tonight's Vibe</div></div>
+      <div class="mood-bar">
+        <div class="mood-chip" onclick="selectMood(this,'romantic')">🕯️ Romantic</div>
+        <div class="mood-chip" onclick="selectMood(this,'adventurous')">🌶️ Adventurous</div>
+        <div class="mood-chip" onclick="selectMood(this,'celebrating')">🥂 Celebrating</div>
+        <div class="mood-chip" onclick="selectMood(this,'casual')">😌 Casual</div>
+        <div class="mood-chip" onclick="selectMood(this,'business')">💼 Business</div>
+      </div>
+    </div>
+
+    <!-- Venues -->
+    <div>
+      <div class="section-hd"><div class="section-title">Our Venues</div><div class="section-link" onclick="navigate('order')">Reserve →</div></div>
+      <div class="rest-strip">
+        <div class="rest-pill featured" onclick="showToast('⭐ Seven Reasons — 931 H St NW')">Seven Reasons ⭐</div>
+        <div class="rest-pill" onclick="showToast('🍸 Imperfecto — 1124 23rd St NW')">Imperfecto</div>
+        <div class="rest-pill" onclick="showToast('🌍 Surreal Global Kitchen')">Surreal</div>
+        <div class="rest-pill" onclick="showToast('🥂 Quadrant Bar & Lounge')">Quadrant</div>
+      </div>
+    </div>
+
+    <!-- Chef story -->
+    <div>
+      <div class="section-hd"><div class="section-title">Meet the Chef</div><div class="section-link" onclick="navigate('explore')">Full story →</div></div>
+      <div class="chef-card" onclick="navigate('explore')">
+        <div class="chef-banner"><div class="chef-avatar">👨‍🍳</div></div>
+        <div class="chef-body">
+          <div class="chef-tag">Executive Chef & Co-Founder</div>
+          <div class="chef-name-big">Enrique Limardo</div>
+          <div class="chef-quote">"Every dish is a passport — I want guests to travel through Latin America in a single evening."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming events -->
+    <div>
+      <div class="section-hd"><div class="section-title">Upcoming Events</div><div class="section-link" onclick="navigate('explore')">See all →</div></div>
+      <div class="event-card" onclick="openModal('Latin Wine Dinner','An intimate 6-course wine pairing with sommeliers from Venezuela and Argentina.','🍷','Seven Reasons',1200,'enough')">
+        <div class="event-date"><div class="event-month">MAY</div><div class="event-day">3</div></div>
+        <div class="event-info">
+          <div class="event-name">Latin Wine Dinner</div>
+          <div class="event-detail">6-course pairing · 7:00 PM · 12 seats</div>
+          <div class="event-badge">✦ Members Only</div>
+        </div>
+      </div>
+      <div class="event-card" onclick="openModal('Chef\'s Table Night','Sit at the chef\'s counter and watch your meal be crafted live.','👨‍🍳','Seven Reasons',2000,'need')">
+        <div class="event-date"><div class="event-month">MAY</div><div class="event-day">10</div></div>
+        <div class="event-info">
+          <div class="event-name">Chef's Table Night</div>
+          <div class="event-detail">Open kitchen counter · 6:30 PM · 4 seats</div>
+          <div class="event-badge">2,000 pts to unlock</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Streak -->
+    <div>
+      <div class="section-hd"><div class="section-title">Visit Streak</div></div>
+      <div class="streak-card">
+        <div class="streak-num">5</div>
+        <div class="streak-text">
+          <div class="streak-label">Consecutive visits 🔥</div>
+          <div class="streak-sub">Visit once more this week to earn Bonus 50 pts</div>
+          <div class="streak-days">
+            <div class="s-day done">M</div><div class="s-day done">T</div><div class="s-day done">W</div><div class="s-day done">T</div><div class="s-day today">F</div><div class="s-day">S</div><div class="s-day">S</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick rewards -->
+    <div>
+      <div class="section-hd"><div class="section-title">Ready to Redeem</div><div class="section-link" onclick="navigate('rewards')">All →</div></div>
+      <div class="reward-preview" onclick="openModal('Welcome Cocktail','A complimentary cocktail at any venue, bartender\'s choice.','🍹','Any Venue',400,'enough')">
+        <div class="rp-icon">🍹</div>
+        <div class="rp-info">
+          <div class="rp-name">Welcome Cocktail</div>
+          <div class="rp-rest">Any Venue</div>
+          <div class="rp-pts"><div class="pts-badge">400 pts</div><div class="pts-ok">✓ You can redeem!</div></div>
+        </div>
+      </div>
+      <div class="reward-preview" onclick="openModal('Free Dessert','Any dessert from the current menu, on us.','🍫','Any Venue',600,'enough')">
+        <div class="rp-icon">🍫</div>
+        <div class="rp-info">
+          <div class="rp-name">Free Dessert</div>
+          <div class="rp-rest">Any Venue</div>
+          <div class="rp-pts"><div class="pts-badge">600 pts</div><div class="pts-ok">✓ You can redeem!</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="nav-item active" onclick="navigate('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="navigate('order')"><div class="nav-icon">🍽️</div><div class="nav-label">Dine</div></div>
+    <div class="nav-item" onclick="navigate('explore')"><div class="nav-icon">🌎</div><div class="nav-label">Explore</div></div>
+    <div class="nav-item" onclick="navigate('rewards')"><div class="nav-icon">✦</div><div class="nav-label">Rewards</div></div>
+    <div class="nav-item" onclick="navigate('chat')"><div class="nav-icon">🤖</div><div class="nav-label">Concierge</div></div>
+  </div>
+</div>
+
+<!-- ORDER / DINE -->
+<div class="screen" id="screen-order">
+  <div class="status-bar"><span class="time">9:41</span><span>📶 🔋</span></div>
+  <div class="order-top">
+    <h2>Dine & Earn</h2>
+    <p>Explore menus · earn 10 pts per $1 spent</p>
+  </div>
+  <div class="rest-selector">
+    <div class="rs-tab active" onclick="setRestTab(this,'seven','https://www.opentable.com/r/seven-reasons-reservations-washington-dc?restref=1126879')">Seven Reasons ⭐</div>
+    <div class="rs-tab" onclick="setRestTab(this,'imperfecto','https://www.opentable.com/r/imperfecto-reservations-washington?restref=1282447')">Imperfecto</div>
+    <div class="rs-tab" onclick="setRestTab(this,'surreal','https://www.opentable.com/r/surreal-global-kitchen-reservations-arlington?restref=1241422')">Surreal</div>
+    <div class="rs-tab" onclick="setRestTab(this,'quadrant','https://www.opentable.com/r/quadrant-bar-and-lounge-reservations-washington?restref=1184953')">Quadrant</div>
+  </div>
+  <div class="menu-filter">
+    <div class="mf-btn active" onclick="setMenuFilter(this,'all')">All</div>
+    <div class="mf-btn" onclick="setMenuFilter(this,'starters')">Starters</div>
+    <div class="mf-btn" onclick="setMenuFilter(this,'mains')">Mains</div>
+    <div class="mf-btn" onclick="setMenuFilter(this,'cocktails')">Cocktails</div>
+    <div class="mf-btn" onclick="setMenuFilter(this,'desserts')">Desserts</div>
+    <div class="mf-btn" onclick="setMenuFilter(this,'veg')">Vegetarian</div>
+  </div>
+  <div class="order-scroll" id="menu-panel">
+    <div class="menu-section-lbl">Starters</div>
+    <div class="dish-card" data-cat="starters" onclick="addToCart(this,'Patacón Piña Colada',18,180)">
+      <div class="dish-emoji">🍌</div>
+      <div class="dish-info">
+        <div class="dish-name">Patacón Piña Colada</div>
+        <div class="dish-desc">Fried green plantains, pickled pineapple, cilantro mojo, caper mayo</div>
+        <div class="dish-tags"><span class="dish-tag veg">Vegetarian</span><span class="dish-tag chef">Chef's Pick</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$18</div><div class="dish-pts-earn">Earn 180 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish-card" data-cat="starters" onclick="addToCart(this,'Arepita Threesome',16,160)">
+      <div class="dish-emoji">🫓</div>
+      <div class="dish-info">
+        <div class="dish-name">Arepita "Threesome"</div>
+        <div class="dish-desc">Three mini arepas with rotating seasonal toppings from the chef</div>
+        <div class="dish-tags"><span class="dish-tag chef">Seasonal</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$16</div><div class="dish-pts-earn">Earn 160 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish-card" data-cat="starters" onclick="addToCart(this,'Ceviche Negro',22,220)">
+      <div class="dish-emoji">🐟</div>
+      <div class="dish-info">
+        <div class="dish-name">Ceviche Negro</div>
+        <div class="dish-desc">Squid ink leche de tigre, Peruvian chilis, corn, fresh market fish</div>
+        <div class="dish-tags"><span class="dish-tag spicy">Spicy</span><span class="dish-tag chef">Chef's Pick</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$22</div><div class="dish-pts-earn">Earn 220 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-section-lbl">Mains</div>
+    <div class="dish-card" data-cat="mains" onclick="addToCart(this,'Lamb Lo Mein',36,360)">
+      <div class="dish-emoji">🍜</div>
+      <div class="dish-info">
+        <div class="dish-name">Lamb Lo Mein</div>
+        <div class="dish-desc">Spicy passion fruit garlic sauce, slow-braised lamb, crispy shallots</div>
+        <div class="dish-tags"><span class="dish-tag spicy">Spicy</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$36</div><div class="dish-pts-earn">Earn 360 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish-card" data-cat="mains" onclick="addToCart(this,'Duck Pabellón',42,420)">
+      <div class="dish-emoji">🦆</div>
+      <div class="dish-info">
+        <div class="dish-name">Duck Pabellón</div>
+        <div class="dish-desc">Confit duck leg, black bean purée, fried sweet plantain, crispy rice</div>
+        <div class="dish-tags"><span class="dish-tag chef">Chef's Signature</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$42</div><div class="dish-pts-earn">Earn 420 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish-card" data-cat="mains veg" onclick="addToCart(this,'Yuca Gnocchi',28,280)">
+      <div class="dish-emoji">🥬</div>
+      <div class="dish-info">
+        <div class="dish-name">Yuca Gnocchi</div>
+        <div class="dish-desc">Handmade yuca gnocchi, chimichurri verde, roasted tomato, aged cheese</div>
+        <div class="dish-tags"><span class="dish-tag veg">Vegetarian</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$28</div><div class="dish-pts-earn">Earn 280 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-section-lbl">Cocktails</div>
+    <div class="dish-card" data-cat="cocktails" onclick="addToCart(this,'Andean Negroni',18,180)">
+      <div class="dish-emoji">🍸</div>
+      <div class="dish-info">
+        <div class="dish-name">Andean Negroni</div>
+        <div class="dish-desc">Pisco, Aperol, quinoa-infused vermouth, coca leaf bitters</div>
+        <div class="dish-tags"><span class="dish-tag chef">Signature</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$18</div><div class="dish-pts-earn">Earn 180 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish-card" data-cat="cocktails" onclick="addToCart(this,'Maracuyá Sour',16,160)">
+      <div class="dish-emoji">🍋</div>
+      <div class="dish-info">
+        <div class="dish-name">Maracuyá Sour</div>
+        <div class="dish-desc">Passion fruit, aguardiente, lime, egg white foam, Angostura mist</div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$16</div><div class="dish-pts-earn">Earn 160 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="menu-section-lbl">Desserts</div>
+    <div class="dish-card" data-cat="desserts" onclick="addToCart(this,'Cacao & Laurel',14,140)">
+      <div class="dish-emoji">🍫</div>
+      <div class="dish-info">
+        <div class="dish-name">Cacao & Laurel</div>
+        <div class="dish-desc">Dark chocolate basil crumble, milk chocolate cremeux, bay leaf ice cream, quinoa tuile</div>
+        <div class="dish-tags"><span class="dish-tag chef">Chef's Pick</span></div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$14</div><div class="dish-pts-earn">Earn 140 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish-card" data-cat="desserts" onclick="addToCart(this,'Tres Leches Cloud',13,130)">
+      <div class="dish-emoji">☁️</div>
+      <div class="dish-info">
+        <div class="dish-name">Tres Leches Cloud</div>
+        <div class="dish-desc">Deconstructed tres leches, passion fruit curd, toasted meringue cloud</div>
+        <div class="dish-footer">
+          <div><div class="dish-price">$13</div><div class="dish-pts-earn">Earn 130 pts ✦</div></div>
+          <button class="add-btn">+</button>
+        </div>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="cart-bar" id="cart-bar" onclick="checkout()">
+    <div class="cart-info">
+      <div class="cart-count" id="cart-count">0 items</div>
+      <div class="cart-total" id="cart-total">$0</div>
+    </div>
+    <div class="cart-cta">Log Visit →</div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="navigate('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item active" onclick="navigate('order')"><div class="nav-icon">🍽️</div><div class="nav-label">Dine</div></div>
+    <div class="nav-item" onclick="navigate('explore')"><div class="nav-icon">🌎</div><div class="nav-label">Explore</div></div>
+    <div class="nav-item" onclick="navigate('rewards')"><div class="nav-icon">✦</div><div class="nav-label">Rewards</div></div>
+    <div class="nav-item" onclick="navigate('chat')"><div class="nav-icon">🤖</div><div class="nav-label">Concierge</div></div>
+  </div>
+</div>
+
+<!-- EXPLORE (new!) -->
+<div class="screen" id="screen-explore">
+  <div class="status-bar"><span class="time">9:41</span><span>📶 🔋</span></div>
+  <div class="explore-header">
+    <h2>Explore</h2>
+    <p>Stories, events & the world on your plate</p>
+  </div>
+  <div class="explore-scroll">
+
+    <!-- Rate your last visit -->
+    <div class="rate-card">
+      <div class="rate-title">How was your last visit?</div>
+      <div class="rate-sub">Seven Reasons · April 24</div>
+      <div class="rate-stars" id="rate-stars">
+        <span class="rate-star" onclick="setRating(1)">⭐</span>
+        <span class="rate-star" onclick="setRating(2)">⭐</span>
+        <span class="rate-star" onclick="setRating(3)">⭐</span>
+        <span class="rate-star active" onclick="setRating(4)">⭐</span>
+        <span class="rate-star active" onclick="setRating(5)">⭐</span>
+      </div>
+      <div class="rate-aspects">
+        <div class="rate-aspect">
+          <div class="rate-aspect-name">Food quality</div>
+          <div class="rate-dots">
+            <div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div>
+          </div>
+        </div>
+        <div class="rate-aspect">
+          <div class="rate-aspect-name">Service</div>
+          <div class="rate-dots">
+            <div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot"></div>
+          </div>
+        </div>
+        <div class="rate-aspect">
+          <div class="rate-aspect-name">Ambiance</div>
+          <div class="rate-dots">
+            <div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div>
+          </div>
+        </div>
+        <div class="rate-aspect">
+          <div class="rate-aspect-name">Value</div>
+          <div class="rate-dots">
+            <div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot filled"></div><div class="rate-dot"></div><div class="rate-dot"></div>
+          </div>
+        </div>
+      </div>
+      <div class="photo-upload" onclick="showToast('📸 Photo upload coming soon!')">
+        <div class="pu-icon">📷</div>
+        <p>Add a photo from your visit · earn +50 pts</p>
+      </div>
+      <button class="btn-gold" style="margin-top:14px" onclick="showToast('✦ Review submitted! +75 pts earned')">Submit Review (+75 pts)</button>
+    </div>
+
+    <!-- Upcoming events -->
+    <div>
+      <div class="explore-section-title">Events & Experiences</div>
+      <div class="event-card" onclick="openModal('Latin Wine Dinner','An intimate 6-course wine pairing with sommeliers from Venezuela and Argentina.','🍷','Seven Reasons',1200,'enough')">
+        <div class="event-date"><div class="event-month">MAY</div><div class="event-day">3</div></div>
+        <div class="event-info">
+          <div class="event-name">Latin Wine Dinner</div>
+          <div class="event-detail">6-course pairing · 7:00 PM · 12 seats left</div>
+          <div class="event-badge">1,200 pts · You qualify!</div>
+        </div>
+      </div>
+      <div class="event-card" onclick="openModal('Cacao Heritage Tasting','Single-origin chocolate tasting from four countries with Chef Enrique.','🍫','Seven Reasons',800,'enough')">
+        <div class="event-date"><div class="event-month">MAY</div><div class="event-day">7</div></div>
+        <div class="event-info">
+          <div class="event-name">Cacao Heritage Tasting</div>
+          <div class="event-detail">Evening session · 6:00 PM · 20 seats</div>
+          <div class="event-badge">800 pts · You qualify!</div>
+        </div>
+      </div>
+      <div class="event-card" onclick="openModal('Chef\'s Table Night','Sit at the chef\'s counter and watch your meal be crafted live.','👨‍🍳','Seven Reasons',2000,'need')">
+        <div class="event-date"><div class="event-month">MAY</div><div class="event-day">10</div></div>
+        <div class="event-info">
+          <div class="event-name">Chef's Table Night</div>
+          <div class="event-detail">Open kitchen counter · 6:30 PM · 4 seats</div>
+          <div class="event-badge">2,000 pts needed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chef story -->
+    <div>
+      <div class="explore-section-title">The Chef</div>
+      <div class="chef-card">
+        <div class="chef-banner"><div class="chef-avatar">👨‍🍳</div></div>
+        <div class="chef-body">
+          <div class="chef-tag">Executive Chef & Co-Founder</div>
+          <div class="chef-name-big">Enrique Limardo</div>
+          <div class="chef-quote">"I grew up between Venezuela and Europe. I wanted a restaurant that could hold all of that — the warmth of Latin cooking, the precision of fine dining, the curiosity of world cuisine."</div>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <div style="font-size:11px; padding:4px 10px; border-radius:10px; background:rgba(201,151,43,0.1); border:1px solid var(--border); color:var(--gold);">🏆 James Beard Semifinalist</div>
+            <div style="font-size:11px; padding:4px 10px; border-radius:10px; background:rgba(201,151,43,0.1); border:1px solid var(--border); color:var(--gold);">⭐ Michelin Recommended</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingredient stories -->
+    <div>
+      <div class="explore-section-title">Ingredient Origins</div>
+      <div class="ingredient-card" style="margin-bottom:10px" onclick="showToast('🌿 Cilantro — Colombia · Andes region')">
+        <div class="ingr-color" style="background:#4A8A52"></div>
+        <div class="ingr-body">
+          <div class="ingr-emoji">🌿</div>
+          <div class="ingr-name">Colombian Cilantro</div>
+          <div class="ingr-origin">Bogotá · Andes highlands</div>
+          <div class="ingr-desc">Harvested from small farms at 2,600m elevation. The altitude creates an intensity of flavor impossible to replicate.</div>
+        </div>
+      </div>
+      <div class="ingredient-card" style="margin-bottom:10px" onclick="showToast('🌶️ Ají Amarillo — Peru · coastal valleys')">
+        <div class="ingr-color" style="background:#C4613A"></div>
+        <div class="ingr-body">
+          <div class="ingr-emoji">🌶️</div>
+          <div class="ingr-name">Ají Amarillo</div>
+          <div class="ingr-origin">Peru · Coastal valleys</div>
+          <div class="ingr-desc">The soul of Peruvian cuisine. Fruity, floral heat that underpins our ceviche and braising sauces.</div>
+        </div>
+      </div>
+      <div class="ingredient-card" onclick="showToast('🍫 Cacao — Venezuela · Sur del Lago')">
+        <div class="ingr-color" style="background:#5C3010"></div>
+        <div class="ingr-body">
+          <div class="ingr-emoji">🍫</div>
+          <div class="ingr-name">Sur del Lago Cacao</div>
+          <div class="ingr-origin">Venezuela · Lake Maracaibo basin</div>
+          <div class="ingr-desc">Among the world's rarest cacaos. Complex, fruity, and deeply personal to Chef Enrique's origins.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:8px"></div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="navigate('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="navigate('order')"><div class="nav-icon">🍽️</div><div class="nav-label">Dine</div></div>
+    <div class="nav-item active" onclick="navigate('explore')"><div class="nav-icon">🌎</div><div class="nav-label">Explore</div></div>
+    <div class="nav-item" onclick="navigate('rewards')"><div class="nav-icon">✦</div><div class="nav-label">Rewards</div></div>
+    <div class="nav-item" onclick="navigate('chat')"><div class="nav-icon">🤖</div><div class="nav-label">Concierge</div></div>
+  </div>
+</div>
+
+<!-- REWARDS -->
+<div class="screen" id="screen-rewards">
+  <div class="status-bar"><span class="time">9:41</span><span>📶 🔋</span></div>
+  <div class="rewards-top">
+    <h2>Rewards</h2>
+    <p>Redeem across all four venues</p>
+  </div>
+  <div style="height:16px; background:var(--black)"></div>
+  <div class="mini-card">
+    <div><div class="mini-lbl">Points</div><div class="mini-pts">720</div></div>
+    <div class="mini-right"><div class="mini-lbl">Tier</div><div class="mini-tier">✦ Gold</div></div>
+  </div>
+  <div class="tier-progress">
+    <div class="tier-row"><div class="tier-cur">Gold Member</div><div class="tier-nxt">280 pts → Platinum</div></div>
+    <div class="tier-bg"><div class="tier-fill"></div></div>
+  </div>
+  <div class="rewards-scroll">
+    <div class="rw-filter">
+      <div class="rf-btn active" onclick="setRwFilter(this)">All</div>
+      <div class="rf-btn" onclick="setRwFilter(this)">Drinks</div>
+      <div class="rf-btn" onclick="setRwFilter(this)">Food</div>
+      <div class="rf-btn" onclick="setRwFilter(this)">Experiences</div>
+      <div class="rf-btn" onclick="setRwFilter(this)">Events</div>
+    </div>
+    <div class="rw-grid">
+      <div class="rw-tile" onclick="openModal('Welcome Cocktail','A complimentary cocktail at any venue, bartender\'s choice.','🍹','Any Venue',400,'enough')">
+        <div class="rw-redeem">REDEEM</div>
+        <div class="rw-emoji">🍹</div>
+        <div class="rw-name">Welcome Cocktail</div>
+        <div class="rw-venue">Any Venue</div>
+        <div class="rw-pts">400 pts</div>
+      </div>
+      <div class="rw-tile" onclick="openModal('Free Dessert','Any dessert from the current menu, on us.','🍫','Any Venue',600,'enough')">
+        <div class="rw-redeem">REDEEM</div>
+        <div class="rw-emoji">🍫</div>
+        <div class="rw-name">Free Dessert</div>
+        <div class="rw-venue">Any Venue</div>
+        <div class="rw-pts">600 pts</div>
+      </div>
+      <div class="rw-tile" onclick="openModal('Patacón Piña Colada','The iconic signature dish from Seven Reasons, complimentary.','🍌','Seven Reasons',800,'need')">
+        <div class="rw-emoji">🍌</div>
+        <div class="rw-name">Patacón Piña Colada</div>
+        <div class="rw-venue">Seven Reasons</div>
+        <div class="rw-pts">800 pts</div>
+      </div>
+      <div class="rw-tile" onclick="openModal('Happy Hour for Two','Complimentary drinks for two, Mon–Fri 5–7 PM.','🥂','Seven Reasons',900,'need')">
+        <div class="rw-emoji">🥂</div>
+        <div class="rw-name">Happy Hour for Two</div>
+        <div class="rw-venue">Seven Reasons</div>
+        <div class="rw-pts">900 pts</div>
+      </div>
+      <div class="rw-tile" onclick="openModal('Wine Dinner Ticket','One seat at an upcoming Latin wine pairing dinner.','🍷','Seven Reasons',1200,'need')">
+        <div class="rw-emoji">🍷</div>
+        <div class="rw-name">Wine Dinner Ticket</div>
+        <div class="rw-venue">Seven Reasons</div>
+        <div class="rw-pts">1,200 pts</div>
+      </div>
+      <div class="rw-tile locked" onclick="openModal('Chef\'s Table Access','Reserve one of two exclusive chef\'s table seats beside the open kitchen.','👨‍🍳','Seven Reasons',2000,'locked')">
+        <div class="rw-lock">🔒</div>
+        <div class="rw-emoji">👨‍🍳</div>
+        <div class="rw-name">Chef's Table</div>
+        <div class="rw-venue">Seven Reasons</div>
+        <div class="rw-pts">2,000 pts</div>
+      </div>
+      <div class="rw-tile locked" onclick="openModal('Private Tasting Event','Exclusive access to a private tasting event with Chef Enrique.','🌟','Seven Reasons',3500,'locked')">
+        <div class="rw-lock">🔒</div>
+        <div class="rw-emoji">🌟</div>
+        <div class="rw-name">Private Tasting</div>
+        <div class="rw-venue">Group Exclusive</div>
+        <div class="rw-pts">3,500 pts</div>
+      </div>
+      <div class="rw-tile locked" onclick="openModal('Seven Reasons Apron','The restaurant\'s signature linen apron, a piece of culinary art.','👘','Merchandise',1500,'locked')">
+        <div class="rw-lock">🔒</div>
+        <div class="rw-emoji">👘</div>
+        <div class="rw-name">SR Signature Apron</div>
+        <div class="rw-venue">Merch</div>
+        <div class="rw-pts">1,500 pts</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="navigate('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="navigate('order')"><div class="nav-icon">🍽️</div><div class="nav-label">Dine</div></div>
+    <div class="nav-item" onclick="navigate('explore')"><div class="nav-icon">🌎</div><div class="nav-label">Explore</div></div>
+    <div class="nav-item active" onclick="navigate('rewards')"><div class="nav-icon">✦</div><div class="nav-label">Rewards</div></div>
+    <div class="nav-item" onclick="navigate('chat')"><div class="nav-icon">🤖</div><div class="nav-label">Concierge</div></div>
+  </div>
+</div>
+
+<!-- CHATBOT (new!) -->
+<div class="screen" id="screen-chat">
+  <div class="status-bar"><span class="time">9:41</span><span>📶 🔋</span></div>
+  <div class="chat-header">
+    <div class="chat-avatar">🤖</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Lucia · Dining Concierge</div>
+      <div class="chat-header-status">Online · powered by AI</div>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="msg bot">
+      <div class="msg-bubble">¡Hola Alex! I'm Lucia, your personal dining concierge at Seven Reasons. I can help you explore our menu, make recommendations based on your taste, book reservations, or tell you the story behind any dish. How can I help tonight? 🌟</div>
+      <div class="msg-time">Just now</div>
+    </div>
+  </div>
+  <div class="chat-suggestions" id="chat-suggestions">
+    <div class="chat-suggestion" onclick="sendSuggestion(this)">What should I order?</div>
+    <div class="chat-suggestion" onclick="sendSuggestion(this)">How do I earn more points?</div>
+    <div class="chat-suggestion" onclick="sendSuggestion(this)">Tell me about the ceviche</div>
+    <div class="chat-suggestion" onclick="sendSuggestion(this)">Book a table tonight</div>
+    <div class="chat-suggestion" onclick="sendSuggestion(this)">Surprise me! 🎲</div>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chat-input" placeholder="Ask Lucia anything..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-item" onclick="navigate('home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div></div>
+    <div class="nav-item" onclick="navigate('order')"><div class="nav-icon">🍽️</div><div class="nav-label">Dine</div></div>
+    <div class="nav-item" onclick="navigate('explore')"><div class="nav-icon">🌎</div><div class="nav-label">Explore</div></div>
+    <div class="nav-item" onclick="navigate('rewards')"><div class="nav-icon">✦</div><div class="nav-label">Rewards</div></div>
+    <div class="nav-item active" onclick="navigate('chat')"><div class="nav-icon">🤖</div><div class="nav-label">Concierge</div></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-emoji" id="modal-emoji">🍹</div>
+    <div class="modal-venue" id="modal-venue">SEVEN REASONS</div>
+    <div class="modal-title" id="modal-title">Reward</div>
+    <div class="modal-desc" id="modal-desc">Description</div>
+    <div class="modal-pts-wrap"><div class="modal-pts-val" id="modal-pts">400</div><div class="modal-pts-lbl">Points Required</div></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+let cartCount=0, cartTotal=0, cartPts=0;
+setTimeout(()=>navigate('onboarding'), 2200);
+
+function navigate(s) {
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-'+s).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('#screen-'+s+' .nav-item').forEach(n=>{
+    if(n.onclick && n.onclick.toString().includes("'"+s+"'")) n.classList.add('active');
+  });
+  window.scrollTo(0,0);
+  if(s==='chat') document.getElementById('chat-messages').scrollTop = 9999;
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function selectMood(el, mood) {
+  document.querySelectorAll('.mood-chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  const msgs = {
+    romantic: '🕯️ Romantic night? Try the Duck Pabellón and Andean Negroni — perfect pair.',
+    adventurous: '🌶️ Feeling bold? The Ceviche Negro and Lamb Lo Mein will take you somewhere new.',
+    celebrating: '🥂 Let\'s celebrate! Use your points for a Welcome Cocktail to start strong.',
+    casual: '😌 Casual vibes — the Arepita Threesome and Maracuyá Sour are perfect.',
+    business: '💼 Business dinner? Ask Lucia for our private dining options.'
+  };
+  showToast(msgs[mood] || '');
+}
+
+function setRestTab(el, rest, url) {
+  document.querySelectorAll('.rs-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const names = { seven:'Seven Reasons — 931 H St NW', imperfecto:'Imperfecto — 1124 23rd St NW', surreal:'Surreal Global Kitchen — 2117 Crystal Dr', quadrant:'Quadrant Bar & Lounge — 1190 22nd St NW' };
+  showToast('📍 ' + names[rest] + ' — tap to reserve →');
+  setTimeout(()=>window.open(url,'_blank'), 600);
+}
+
+function setMenuFilter(el, cat) {
+  document.querySelectorAll('.mf-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.dish-card').forEach(card=>{
+    if(cat==='all') { card.style.display='flex'; return; }
+    card.style.display = card.dataset.cat && card.dataset.cat.includes(cat) ? 'flex':'none';
+  });
+  document.querySelectorAll('.menu-section-lbl').forEach(lbl=>lbl.style.display = cat==='all'?'block':'none');
+}
+
+function setRwFilter(el) {
+  document.querySelectorAll('.rf-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function addToCart(card, name, price, pts) {
+  cartCount++; cartTotal+=price; cartPts+=pts;
+  document.getElementById('cart-count').textContent=cartCount+(cartCount===1?' item':' items');
+  document.getElementById('cart-total').textContent='$'+cartTotal;
+  document.getElementById('cart-bar').classList.add('visible');
+  showToast('✦ Added — you\'ll earn '+pts+' pts');
+  const btn=card.querySelector('.add-btn');
+  btn.textContent='✓'; btn.style.background='var(--green)';
+  setTimeout(()=>{btn.textContent='+'; btn.style.background='var(--gold)';},1200);
+}
+
+function checkout() {
+  showToast('🎉 Visit logged! +'+cartPts+' pts earned');
+  cartCount=0; cartTotal=0; cartPts=0;
+  document.getElementById('cart-bar').classList.remove('visible');
+  document.getElementById('cart-count').textContent='0 items';
+  document.getElementById('cart-total').textContent='$0';
+  document.querySelectorAll('.add-btn').forEach(b=>{b.textContent='+'; b.style.background='var(--gold)';});
+}
+
+function openModal(name, desc, emoji, venue, pts, status) {
+  document.getElementById('modal-emoji').textContent=emoji;
+  document.getElementById('modal-venue').textContent=venue.toUpperCase();
+  document.getElementById('modal-title').textContent=name;
+  document.getElementById('modal-desc').textContent=desc;
+  document.getElementById('modal-pts').textContent=pts.toLocaleString();
+  const actions=document.getElementById('modal-actions');
+  if(status==='enough') {
+    actions.innerHTML=`<button class="btn-gold" onclick="redeemReward('${name}')">Redeem for ${pts.toLocaleString()} pts</button><button class="btn-ghost" onclick="closeModal()">Not now</button>`;
+  } else if(status==='need') {
+    const diff=pts-720;
+    actions.innerHTML=`<button class="btn-gold" onclick="navigate('order');closeModal()">Earn ${diff} more pts</button><button class="btn-ghost" onclick="closeModal()">Close</button>`;
+  } else {
+    actions.innerHTML=`<button class="btn-gold" onclick="navigate('order');closeModal()">Keep earning</button><button class="btn-ghost" onclick="closeModal()">Close</button>`;
+  }
+  document.getElementById('modal').classList.add('open');
+}
+
+function redeemReward(name) { closeModal(); showToast('✦ Redeemed: '+name); }
+function closeModal(e) {
+  if(!e||e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
+}
+
+function setRating(n) {
+  const stars=document.querySelectorAll('.rate-star');
+  stars.forEach((s,i)=>{ s.classList.toggle('active', i<n); });
+  showToast('⭐ '.repeat(n).trim() + ' — Thanks for rating!');
+}
+
+// ======= AI CHATBOT =======
+const LUCIA_SYSTEM = `You are Lucia, the warm and knowledgeable AI dining concierge for Seven Reasons restaurant in Washington DC. Seven Reasons is an acclaimed Latin-inspired restaurant founded by Venezuelan-born Chef Enrique Limardo. It's Michelin-recommended and James Beard-recognized. The restaurant group also includes Imperfecto, Surreal Global Kitchen, and Quadrant Bar & Lounge.
+
+Key menu items: Patacón Piña Colada ($18, fried plantains), Arepita Threesome ($16), Ceviche Negro ($22, squid ink), Lamb Lo Mein ($36), Duck Pabellón ($42), Yuca Gnocchi ($28), Andean Negroni ($18), Maracuyá Sour ($16), Cacao & Laurel ($14), Tres Leches Cloud ($13).
+
+The loyalty program: Gold tier (current user Alex Chen has 720 points), 10 pts per $1 spent, Platinum at 1000 pts. Available rewards include Welcome Cocktail (400 pts), Free Dessert (600 pts), Chef's Table (2000 pts).
+
+Alex Chen: Gold member, 720 points, 23 visits, 5-visit streak, likes adventurous Latin food.
+
+Upcoming events: Latin Wine Dinner May 3 (1200 pts), Cacao Heritage Tasting May 7 (800 pts), Chef's Table Night May 10 (2000 pts).
+
+Be warm, knowledgeable, and personalized. Keep replies concise (2-4 sentences max). Use a touch of Spanish warmth (an occasional "¡Perfecto!" or "¡Bueno!"). Help with: menu recommendations, points/rewards, reservations (link to OpenTable), event bookings, ingredient stories, dietary preferences. Always end with a follow-up question or suggestion.`;
+
+let chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  input.style.height = 'auto';
+  addMessage('user', msg);
+  document.getElementById('chat-suggestions').style.display='none';
+  showTyping();
+  try {
+    chatHistory.push({role:'user', content: msg});
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: LUCIA_SYSTEM,
+        messages: chatHistory
+      })
+    });
+    const data = await response.json();
+    hideTyping();
+    const reply = data.content && data.content[0] ? data.content[0].text : 'Lo siento, I had trouble connecting. Please try again!';
+    chatHistory.push({role:'assistant', content: reply});
+    addMessage('bot', reply);
+  } catch(e) {
+    hideTyping();
+    addMessage('bot', 'Lo siento! I\'m having a moment. Please try again or ask our team directly. 🙏');
+  }
+}
+
+function addMessage(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg '+role;
+  div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">Just now</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+let typingEl = null;
+function showTyping() {
+  const msgs = document.getElementById('chat-messages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'msg bot';
+  typingEl.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  msgs.appendChild(typingEl);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function hideTyping() { if(typingEl) { typingEl.remove(); typingEl=null; } }
+
+function sendSuggestion(el) {
+  document.getElementById('chat-input').value = el.textContent;
+  sendChat();
+}
+
+function handleChatKey(e) {
+  if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+</script>
+</div>
+</body>
+</html>
