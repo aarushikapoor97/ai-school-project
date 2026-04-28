@@ -2,681 +2,871 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Seven Reasons</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --gold: #C9972B;
-    --gold-light: #E2B96A;
-    --black: #0A0804;
-    --dark: #1C1610;
-    --cream: #F4ECD8;
-    --muted: #7A6E5E;
-    --border: rgba(201,151,43,0.2);
-    --green: #4A8A52;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #000;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    color: var(--cream);
-  }
-  .app {
-    width: 100%;
-    max-width: 430px;
-    min-height: 100vh;
-    background: var(--black);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --gold:#C9972B; --gold-light:#E2B96A; --gold-pale:rgba(201,151,43,0.1);
+  --black:#080604; --dark:#141009; --card:#1A1410; --card2:#201810;
+  --cream:#F4ECD8; --muted:#7A6E5E; --border:rgba(201,151,43,0.15);
+  --green:#4A8A52; --red:#C4613A; --blue:#4A7FA5;
+  --r:16px; --rs:10px;
+}
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#000; min-height:100dvh; display:flex; justify-content:center; }
+.app { width:100%; max-width:430px; min-height:100dvh; background:var(--black); display:flex; flex-direction:column; position:relative; overflow:hidden; }
 
-  /* SCREENS */
-  .screen { display: none; flex: 1; flex-direction: column; overflow-y: auto; padding-bottom: 70px; }
-  .screen.active { display: flex; }
+/* SCREENS */
+.screen { display:none; flex-direction:column; position:absolute; inset:0; overflow-y:auto; padding-bottom:75px; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
+.screen.active { display:flex; }
+.screen.slide-in { animation:slideIn .25s ease; }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
 
-  /* SPLASH */
-  #splash {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 12px;
-    min-height: 100vh;
-    background: var(--black);
-    padding-bottom: 0;
-  }
-  .splash-num { font-size: 120px; font-weight: 200; color: var(--gold); line-height: 1; }
-  .splash-name { font-size: 22px; letter-spacing: 8px; text-transform: uppercase; color: var(--cream); }
-  .splash-sub { font-size: 11px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
-  .splash-line { width: 40px; height: 1px; background: var(--gold); opacity: 0.5; }
+/* NAV */
+.nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:rgba(20,16,9,0.95); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:none; justify-content:space-around; padding:8px 0 calc(8px + env(safe-area-inset-bottom)); z-index:200; }
+.nav.visible { display:flex; }
+.nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; background:none; border:none; color:var(--muted); font-size:10px; font-weight:500; padding:4px 10px; position:relative; transition:color .2s; letter-spacing:.3px; }
+.nav-btn .ni { font-size:21px; transition:transform .2s; }
+.nav-btn.active { color:var(--gold); }
+.nav-btn.active .ni { transform:scale(1.15); }
+.nav-badge { position:absolute; top:2px; right:6px; background:var(--red); color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 3px; line-height:1; display:none; }
+.nav-badge.show { display:flex; }
 
-  /* NAV */
-  .nav {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 430px;
-    background: var(--dark);
-    border-top: 1px solid var(--border);
-    display: none;
-    justify-content: space-around;
-    padding: 10px 0 20px;
-    z-index: 100;
-  }
-  .nav.visible { display: flex; }
-  .nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-size: 11px;
-    padding: 4px 12px;
-    transition: color 0.2s;
-  }
-  .nav-btn .icon { font-size: 22px; }
-  .nav-btn.active { color: var(--gold); }
+/* SPLASH */
+#splash { display:flex; justify-content:center; align-items:center; flex-direction:column; gap:14px; min-height:100dvh; background:var(--black); padding-bottom:0; position:absolute; inset:0; z-index:300; transition:opacity .6s ease; }
+#splash.hidden { opacity:0; pointer-events:none; }
+.splash-glow { position:absolute; width:300px; height:300px; background:radial-gradient(circle,rgba(201,151,43,.12) 0%,transparent 70%); border-radius:50%; animation:glow 3s ease-in-out infinite; }
+@keyframes glow { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.splash-num { font-size:130px; font-weight:200; color:var(--gold); line-height:1; text-shadow:0 0 80px rgba(201,151,43,.35); z-index:1; }
+.splash-line { width:40px; height:1px; background:var(--gold); opacity:.4; z-index:1; }
+.splash-name { font-size:20px; letter-spacing:9px; text-transform:uppercase; color:var(--cream); z-index:1; }
+.splash-sub { font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; z-index:1; }
 
-  /* HEADER */
-  .page-header {
-    background: var(--dark);
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .page-header h1 { font-size: 26px; font-weight: 300; color: var(--cream); }
-  .page-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+/* HEADER */
+.pg-head { background:linear-gradient(180deg,var(--dark) 0%,var(--black) 100%); padding:18px 20px 16px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.pg-head h1 { font-size:24px; font-weight:300; color:var(--cream); letter-spacing:-.3px; }
+.pg-head p { font-size:12px; color:var(--muted); margin-top:3px; }
 
-  /* HOME */
-  .points-card {
-    margin: 20px;
-    background: linear-gradient(135deg, #1E1608, #2A1E0A);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .points-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-  .card-tier { font-size: 11px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
-  .card-name { font-size: 20px; font-weight: 300; color: var(--cream); margin-bottom: 16px; }
-  .card-pts { font-size: 64px; font-weight: 200; color: var(--gold-light); line-height: 1; }
-  .card-pts-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .progress-bar { margin-top: 16px; height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; width: 72%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 4px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+/* ── HOME ── */
+.home-hero { background:linear-gradient(160deg,#1a1208 0%,#0d0a05 100%); padding:22px 20px 20px; position:relative; overflow:hidden; flex-shrink:0; }
+.home-hero::after { content:'7'; position:absolute; right:-8px; top:-20px; font-size:180px; font-weight:200; color:rgba(201,151,43,.05); line-height:1; pointer-events:none; }
+.hero-label { font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.hero-name { font-size:28px; font-weight:300; color:var(--cream); line-height:1.15; }
+.hero-name span { color:var(--gold-light); font-style:italic; }
+.hero-row { display:flex; justify-content:space-between; align-items:flex-start; margin-top:4px; }
+.hero-streak { display:flex; align-items:center; gap:6px; background:rgba(201,151,43,.1); border:1px solid var(--border); border-radius:20px; padding:6px 12px; font-size:12px; color:var(--gold); font-weight:500; }
 
-  .section { padding: 20px; }
-  .section-title { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.points-card { margin:18px 18px 0; background:linear-gradient(135deg,#1e1608,#251b09,#1a1206); border:1px solid var(--border); border-radius:20px; padding:22px; position:relative; overflow:hidden; }
+.points-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.pc-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.pc-tier { font-size:10px; letter-spacing:2.5px; color:var(--gold); text-transform:uppercase; background:rgba(201,151,43,.1); border:1px solid rgba(201,151,43,.25); border-radius:20px; padding:4px 10px; }
+.pc-logo { font-size:11px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; }
+.pc-pts { font-size:62px; font-weight:200; color:var(--gold-light); line-height:1; }
+.pc-pts-lbl { font-size:11px; color:var(--muted); margin-top:3px; letter-spacing:1px; }
+.pc-bar-wrap { margin-top:16px; }
+.pc-bar-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:5px; }
+.pc-bar { height:3px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden; }
+.pc-bar-fill { height:100%; width:72%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:3px; animation:barFill 1.2s ease both; }
+@keyframes barFill { from{width:0} }
+.pc-name { font-size:12px; color:rgba(244,236,216,.4); margin-top:12px; letter-spacing:.5px; }
 
-  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 20px; }
-  .action-card {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  .action-card:active { border-color: var(--gold); }
-  .action-icon { font-size: 28px; margin-bottom: 8px; }
-  .action-title { font-size: 14px; font-weight: 500; color: var(--cream); }
-  .action-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.section { padding:20px 18px 4px; }
+.sec-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.sec-title { font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); }
+.sec-link { font-size:12px; color:var(--muted); cursor:pointer; }
+.sec-link:active { color:var(--gold); }
 
-  /* MENU */
-  .menu-filters {
-    display: flex;
-    gap: 8px;
-    padding: 14px 20px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    flex-shrink: 0;
-  }
-  .menu-filters::-webkit-scrollbar { display: none; }
-  .filter-btn {
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: none;
-    color: var(--muted);
-    font-size: 13px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .filter-btn.active { background: var(--gold); border-color: var(--gold); color: var(--black); font-weight: 600; }
+/* Quick actions grid */
+.qa-grid { padding:0 18px 4px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.qa-card { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:15px; cursor:pointer; transition:border-color .2s,transform .15s; }
+.qa-card:active { border-color:var(--gold); transform:scale(.97); }
+.qa-icon { font-size:26px; margin-bottom:8px; }
+.qa-title { font-size:13px; font-weight:600; color:var(--cream); }
+.qa-sub { font-size:11px; color:var(--muted); margin-top:3px; line-height:1.4; }
 
-  .menu-list { padding: 0 20px 10px; display: flex; flex-direction: column; gap: 10px; }
-  .menu-item {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-  .menu-item:active { border-color: var(--gold); }
-  .menu-item.hidden { display: none; }
-  .item-emoji { font-size: 32px; flex-shrink: 0; }
-  .item-info { flex: 1; }
-  .item-name { font-size: 15px; font-weight: 500; color: var(--cream); }
-  .item-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
-  .item-tags { display: flex; gap: 6px; margin-top: 6px; }
-  .tag {
-    font-size: 10px; padding: 2px 8px; border-radius: 10px;
-    background: rgba(201,151,43,0.12); color: var(--gold); letter-spacing: 0.5px;
-  }
-  .tag.spicy { background: rgba(196,97,58,0.15); color: #C4613A; }
-  .tag.veg { background: rgba(74,138,82,0.15); color: var(--green); }
-  .item-price { font-size: 16px; font-weight: 600; color: var(--gold-light); flex-shrink: 0; }
+/* Events */
+.events-scroll { display:flex; gap:12px; padding:0 18px 4px; overflow-x:auto; scrollbar-width:none; }
+.events-scroll::-webkit-scrollbar { display:none; }
+.ev-card { min-width:200px; background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:16px; cursor:pointer; transition:border-color .2s; flex-shrink:0; }
+.ev-card:active { border-color:var(--gold); }
+.ev-date { font-size:10px; letter-spacing:2px; color:var(--gold); text-transform:uppercase; margin-bottom:6px; }
+.ev-name { font-size:14px; font-weight:600; color:var(--cream); line-height:1.3; }
+.ev-pts { font-size:12px; color:var(--muted); margin-top:6px; }
+.ev-tag { display:inline-block; font-size:10px; padding:2px 8px; border-radius:10px; background:rgba(74,138,82,.15); color:var(--green); margin-top:8px; }
+.ev-tag.locked { background:rgba(201,151,43,.1); color:var(--gold); }
 
-  /* REWARDS */
-  .rewards-grid { padding: 0 20px 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .reward-card {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    position: relative;
-  }
-  .reward-card.unlocked { border-color: rgba(201,151,43,0.4); }
-  .reward-card:active { border-color: var(--gold); }
-  .reward-emoji { font-size: 36px; margin-bottom: 8px; }
-  .reward-name { font-size: 13px; font-weight: 600; color: var(--cream); }
-  .reward-pts { font-size: 12px; color: var(--gold); margin-top: 4px; font-weight: 500; }
-  .reward-status { font-size: 11px; color: var(--green); margin-top: 4px; }
-  .reward-locked { position: absolute; top: 10px; right: 10px; font-size: 14px; }
+/* Recent activity */
+.activity-list { display:flex; flex-direction:column; gap:8px; padding:0 18px 8px; }
+.act-item { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--card); border:1px solid var(--border); border-radius:var(--rs); }
+.act-icon { font-size:22px; flex-shrink:0; }
+.act-info { flex:1; }
+.act-title { font-size:13px; font-weight:500; color:var(--cream); }
+.act-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+.act-pts { font-size:13px; font-weight:600; color:var(--green); }
 
-  /* CHAT */
-  #screen-chat { padding-bottom: 130px; }
-  .chat-header {
-    background: var(--dark);
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  .chat-avatar {
-    width: 42px; height: 42px;
-    background: linear-gradient(135deg, var(--gold), var(--gold-light));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .chat-name { font-size: 16px; font-weight: 600; color: var(--cream); }
-  .chat-status { font-size: 12px; color: var(--green); }
+/* ── MENU ── */
+.menu-search { padding:12px 18px 4px; flex-shrink:0; }
+.search-box { display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--border); border-radius:22px; padding:10px 16px; }
+.search-box input { flex:1; background:none; border:none; color:var(--cream); font-size:14px; outline:none; }
+.search-box input::placeholder { color:var(--muted); }
+.search-icon { color:var(--muted); font-size:16px; }
 
-  .chat-messages { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
-  .msg { display: flex; flex-direction: column; max-width: 80%; }
-  .msg.user { align-self: flex-end; align-items: flex-end; }
-  .msg.bot { align-self: flex-start; }
-  .msg-bubble {
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  .msg.user .msg-bubble { background: var(--gold); color: var(--black); border-bottom-right-radius: 4px; }
-  .msg.bot .msg-bubble { background: var(--dark); color: var(--cream); border-bottom-left-radius: 4px; border: 1px solid var(--border); }
-  .msg-time { font-size: 11px; color: var(--muted); margin-top: 4px; padding: 0 4px; }
-  .typing-dots { display: flex; gap: 4px; padding: 14px 16px; background: var(--dark); border-radius: 18px; border-bottom-left-radius: 4px; border: 1px solid var(--border); width: fit-content; }
-  .dot { width: 8px; height: 8px; background: var(--muted); border-radius: 50%; animation: bounce 1.2s infinite; }
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+.menu-filters { display:flex; gap:8px; padding:12px 18px 4px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
+.menu-filters::-webkit-scrollbar { display:none; }
+.mf-btn { padding:7px 16px; border-radius:20px; border:1px solid var(--border); background:none; color:var(--muted); font-size:13px; cursor:pointer; white-space:nowrap; transition:all .2s; font-family:inherit; }
+.mf-btn.active { background:var(--gold); border-color:var(--gold); color:var(--black); font-weight:600; }
 
-  .chat-suggestions { padding: 0 20px 10px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
-  .chat-suggestions::-webkit-scrollbar { display: none; }
-  .suggestion {
-    padding: 8px 14px; border-radius: 20px;
-    border: 1px solid var(--border); background: none;
-    color: var(--cream); font-size: 13px;
-    cursor: pointer; white-space: nowrap; transition: all 0.2s;
-  }
-  .suggestion:active { background: var(--gold); color: var(--black); border-color: var(--gold); }
+.menu-list { padding:8px 18px 8px; display:flex; flex-direction:column; gap:10px; }
+.dish { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:14px; display:flex; gap:12px; transition:border-color .2s; }
+.dish.hidden { display:none; }
+.dish-emoji { font-size:36px; flex-shrink:0; line-height:1; }
+.dish-info { flex:1; min-width:0; }
+.dish-name { font-size:15px; font-weight:600; color:var(--cream); }
+.dish-desc { font-size:12px; color:var(--muted); margin-top:3px; line-height:1.45; }
+.dish-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.dtag { font-size:10px; padding:2px 8px; border-radius:10px; letter-spacing:.3px; }
+.dtag.veg { background:rgba(74,138,82,.15); color:var(--green); }
+.dtag.spicy { background:rgba(196,97,58,.15); color:var(--red); }
+.dtag.chef { background:rgba(201,151,43,.12); color:var(--gold); }
+.dish-foot { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+.dish-price { font-size:17px; font-weight:700; color:var(--gold-light); }
+.dish-earn { font-size:11px; color:var(--muted); }
+.add-btn { width:32px; height:32px; background:var(--gold); border:none; border-radius:50%; font-size:18px; color:var(--black); cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:300; transition:all .2s; flex-shrink:0; }
+.add-btn.added { background:var(--green); }
 
-  .chat-input-area {
-    position: fixed;
-    bottom: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 430px;
-    padding: 10px 16px;
-    background: var(--black);
-    border-top: 1px solid var(--border);
-    display: none;
-    align-items: center;
-    gap: 10px;
-    z-index: 99;
-  }
-  .chat-input-area.visible { display: flex; }
-  .chat-input {
-    flex: 1;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    padding: 10px 16px;
-    color: var(--cream);
-    font-size: 14px;
-    outline: none;
-    resize: none;
-    max-height: 80px;
-    font-family: inherit;
-  }
-  .chat-input::placeholder { color: var(--muted); }
-  .send-btn {
-    width: 40px; height: 40px;
-    background: var(--gold);
-    border: none; border-radius: 50%;
-    font-size: 16px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: transform 0.1s;
-  }
-  .send-btn:active { transform: scale(0.9); }
+/* Cart bar */
+.cart-bar { position:sticky; bottom:75px; left:0; right:0; margin:0 18px 10px; background:linear-gradient(135deg,var(--gold),var(--gold-light)); border-radius:var(--r); padding:14px 18px; display:none; align-items:center; justify-content:space-between; cursor:pointer; box-shadow:0 8px 30px rgba(201,151,43,.35); z-index:100; transition:transform .3s; }
+.cart-bar.visible { display:flex; }
+.cart-bar:active { transform:scale(.98); }
+.cart-info { display:flex; flex-direction:column; }
+.cart-count { font-size:13px; font-weight:700; color:var(--black); }
+.cart-pts { font-size:11px; color:rgba(8,6,4,.65); margin-top:1px; }
+.cart-total { font-size:20px; font-weight:700; color:var(--black); }
+.cart-cta { font-size:13px; font-weight:700; color:var(--black); }
 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 90px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--dark);
-    border: 1px solid var(--border);
-    color: var(--cream);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    opacity: 0;
-    transition: all 0.3s;
-    white-space: nowrap;
-    z-index: 200;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* ── EVENTS TAB ── */
+.ev-hero { padding:20px 18px 0; }
+.ev-big { background:linear-gradient(135deg,#1e1208,#2a1a08); border:1px solid rgba(201,151,43,.25); border-radius:20px; padding:22px; position:relative; overflow:hidden; margin-bottom:14px; cursor:pointer; transition:border-color .2s; }
+.ev-big:active { border-color:var(--gold); }
+.ev-big::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+.ev-big-emoji { font-size:40px; margin-bottom:10px; }
+.ev-big-label { font-size:10px; letter-spacing:2px; color:var(--gold); text-transform:uppercase; margin-bottom:6px; }
+.ev-big-name { font-size:22px; font-weight:300; color:var(--cream); line-height:1.2; }
+.ev-big-date { font-size:12px; color:var(--muted); margin-top:8px; }
+.ev-big-pts { display:inline-flex; align-items:center; gap:6px; margin-top:12px; background:rgba(201,151,43,.12); border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-size:12px; color:var(--gold); }
+
+.ev-list { padding:0 18px 8px; display:flex; flex-direction:column; gap:10px; }
+.ev-row { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; transition:border-color .2s; }
+.ev-row:active { border-color:var(--gold); }
+.ev-row-emoji { font-size:28px; flex-shrink:0; }
+.ev-row-info { flex:1; }
+.ev-row-name { font-size:14px; font-weight:600; color:var(--cream); }
+.ev-row-date { font-size:12px; color:var(--muted); margin-top:3px; }
+.ev-row-pts { font-size:12px; color:var(--gold); font-weight:500; white-space:nowrap; }
+.ev-status { font-size:11px; padding:3px 10px; border-radius:10px; margin-top:4px; display:inline-block; }
+.ev-status.open { background:rgba(74,138,82,.15); color:var(--green); }
+.ev-status.locked { background:rgba(201,151,43,.1); color:var(--gold); }
+
+/* ── REWARDS ── */
+.rewards-grid { padding:0 18px 8px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.rw-card { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:16px; text-align:center; cursor:pointer; transition:all .2s; position:relative; }
+.rw-card.unlocked { border-color:rgba(201,151,43,.35); }
+.rw-card:active { transform:scale(.96); }
+.rw-emoji { font-size:38px; margin-bottom:8px; display:block; }
+.rw-name { font-size:13px; font-weight:600; color:var(--cream); }
+.rw-pts { font-size:12px; color:var(--gold); margin-top:4px; font-weight:500; }
+.rw-status { font-size:11px; margin-top:5px; }
+.rw-status.ok { color:var(--green); }
+.rw-status.locked { color:var(--muted); }
+.rw-lock { position:absolute; top:10px; right:10px; font-size:13px; opacity:.5; }
+
+/* ── CHAT ── */
+#screen-chat { padding-bottom:135px; }
+.chat-head { background:var(--dark); padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.chat-av { width:44px; height:44px; background:linear-gradient(135deg,var(--gold),var(--gold-light)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.chat-av-name { font-size:15px; font-weight:600; color:var(--cream); }
+.chat-av-status { font-size:12px; color:var(--green); margin-top:2px; }
+.chat-msgs { flex:1; padding:14px 18px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; }
+.msg { display:flex; flex-direction:column; max-width:82%; }
+.msg.user { align-self:flex-end; align-items:flex-end; }
+.msg.bot { align-self:flex-start; }
+.msg-bub { padding:11px 15px; border-radius:18px; font-size:14px; line-height:1.55; }
+.msg.user .msg-bub { background:var(--gold); color:var(--black); border-bottom-right-radius:4px; font-weight:500; }
+.msg.bot .msg-bub { background:var(--card2); color:var(--cream); border-bottom-left-radius:4px; border:1px solid var(--border); }
+.msg-time { font-size:10px; color:var(--muted); margin-top:4px; padding:0 4px; }
+.typing { align-self:flex-start; }
+.typing-bub { padding:12px 16px; background:var(--card2); border:1px solid var(--border); border-radius:18px; border-bottom-left-radius:4px; display:flex; gap:5px; align-items:center; }
+.dot { width:7px; height:7px; background:var(--muted); border-radius:50%; animation:bounce 1.2s infinite; }
+.dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+.chat-sugg { display:flex; gap:8px; padding:0 18px 10px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
+.chat-sugg::-webkit-scrollbar { display:none; }
+.sugg-btn { padding:8px 14px; border-radius:20px; border:1px solid var(--border); background:none; color:var(--cream); font-size:13px; cursor:pointer; white-space:nowrap; transition:all .2s; font-family:inherit; flex-shrink:0; }
+.sugg-btn:active { background:var(--gold); color:var(--black); border-color:var(--gold); }
+
+.chat-input-wrap { position:fixed; bottom:75px; left:50%; transform:translateX(-50%); width:100%; max-width:430px; padding:10px 16px calc(10px + env(safe-area-inset-bottom)); background:rgba(8,6,4,.95); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:none; align-items:flex-end; gap:10px; z-index:150; }
+.chat-input-wrap.visible { display:flex; }
+.chat-input { flex:1; background:var(--card); border:1px solid var(--border); border-radius:22px; padding:10px 16px; color:var(--cream); font-size:14px; outline:none; resize:none; max-height:90px; font-family:inherit; line-height:1.4; }
+.chat-input:focus { border-color:rgba(201,151,43,.4); }
+.chat-input::placeholder { color:var(--muted); }
+.send-btn { width:42px; height:42px; background:var(--gold); border:none; border-radius:50%; font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .1s; }
+.send-btn:active { transform:scale(.88); }
+
+/* TOAST */
+.toast { position:fixed; bottom:95px; left:50%; transform:translateX(-50%) translateY(16px); background:var(--card2); border:1px solid var(--border); color:var(--cream); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:all .3s; white-space:nowrap; z-index:500; pointer-events:none; box-shadow:0 8px 30px rgba(0,0,0,.4); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Divider */
+.divider { height:1px; background:var(--border); margin:4px 18px; }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- SPLASH -->
-  <div id="splash" class="screen active">
-    <div class="splash-num">7</div>
-    <div class="splash-line"></div>
-    <div class="splash-name">Seven Reasons</div>
-    <div class="splash-sub">Latin-inspired · Washington DC</div>
-  </div>
-
-  <!-- HOME -->
-  <div id="screen-home" class="screen">
-    <div class="page-header">
-      <h1>Good evening, <span style="color:var(--gold-light)">Alex</span> ✦</h1>
-      <p>Gold Member · 23 visits · 5-visit streak</p>
-    </div>
-
-    <div class="points-card">
-      <div class="card-tier">✦ Gold Tier</div>
-      <div class="card-name">Alex Chen</div>
-      <div class="card-pts">720</div>
-      <div class="card-pts-label">loyalty points</div>
-      <div class="progress-bar"><div class="progress-fill"></div></div>
-      <div class="progress-label"><span>720 pts</span><span>Platinum at 1,000</span></div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Ready to Redeem</div>
-    </div>
-    <div class="quick-actions">
-      <div class="action-card" onclick="toast('🍹 Welcome Cocktail redeemed!')">
-        <div class="action-icon">🍹</div>
-        <div class="action-title">Welcome Cocktail</div>
-        <div class="action-sub">400 pts · You qualify!</div>
-      </div>
-      <div class="action-card" onclick="toast('🍫 Free Dessert redeemed!')">
-        <div class="action-icon">🍫</div>
-        <div class="action-title">Free Dessert</div>
-        <div class="action-sub">600 pts · You qualify!</div>
-      </div>
-      <div class="action-card" onclick="showTab('chat')">
-        <div class="action-icon">🤖</div>
-        <div class="action-title">Ask Lucia</div>
-        <div class="action-sub">AI concierge</div>
-      </div>
-      <div class="action-card" onclick="showTab('menu')">
-        <div class="action-icon">🍽️</div>
-        <div class="action-title">View Menu</div>
-        <div class="action-sub">Earn 10 pts / $1</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MENU -->
-  <div id="screen-menu" class="screen">
-    <div class="page-header">
-      <h1>Dine & Earn</h1>
-      <p>10 pts per $1 · Tap any dish to add</p>
-    </div>
-    <div class="menu-filters">
-      <button class="filter-btn active" onclick="filterMenu('all', this)">All</button>
-      <button class="filter-btn" onclick="filterMenu('starter', this)">Starters</button>
-      <button class="filter-btn" onclick="filterMenu('main', this)">Mains</button>
-      <button class="filter-btn" onclick="filterMenu('cocktail', this)">Cocktails</button>
-      <button class="filter-btn" onclick="filterMenu('dessert', this)">Desserts</button>
-    </div>
-    <div class="menu-list">
-      <div class="menu-item" data-cat="starter" onclick="toast('🍌 Added — earn 180 pts!')">
-        <div class="item-emoji">🍌</div>
-        <div class="item-info">
-          <div class="item-name">Patacón Piña Colada</div>
-          <div class="item-desc">Fried plantains, pickled pineapple, cilantro mojo</div>
-          <div class="item-tags"><span class="tag veg">Vegetarian</span><span class="tag">Chef's Pick</span></div>
-        </div>
-        <div class="item-price">$18</div>
-      </div>
-      <div class="menu-item" data-cat="starter" onclick="toast('🫓 Added — earn 160 pts!')">
-        <div class="item-emoji">🫓</div>
-        <div class="item-info">
-          <div class="item-name">Arepita Threesome</div>
-          <div class="item-desc">Three mini arepas with seasonal toppings</div>
-          <div class="item-tags"><span class="tag">Seasonal</span></div>
-        </div>
-        <div class="item-price">$16</div>
-      </div>
-      <div class="menu-item" data-cat="starter" onclick="toast('🐟 Added — earn 220 pts!')">
-        <div class="item-emoji">🐟</div>
-        <div class="item-info">
-          <div class="item-name">Ceviche Negro</div>
-          <div class="item-desc">Squid ink leche de tigre, Peruvian chilis, fresh fish</div>
-          <div class="item-tags"><span class="tag spicy">Spicy</span><span class="tag">Chef's Pick</span></div>
-        </div>
-        <div class="item-price">$22</div>
-      </div>
-      <div class="menu-item" data-cat="main" onclick="toast('🍜 Added — earn 360 pts!')">
-        <div class="item-emoji">🍜</div>
-        <div class="item-info">
-          <div class="item-name">Lamb Lo Mein</div>
-          <div class="item-desc">Passion fruit garlic sauce, slow-braised lamb</div>
-          <div class="item-tags"><span class="tag spicy">Spicy</span></div>
-        </div>
-        <div class="item-price">$36</div>
-      </div>
-      <div class="menu-item" data-cat="main" onclick="toast('🦆 Added — earn 420 pts!')">
-        <div class="item-emoji">🦆</div>
-        <div class="item-info">
-          <div class="item-name">Duck Pabellón</div>
-          <div class="item-desc">Confit duck, black beans, sweet plantains, rice</div>
-          <div class="item-tags"><span class="tag">Chef's Pick</span></div>
-        </div>
-        <div class="item-price">$42</div>
-      </div>
-      <div class="menu-item" data-cat="main" onclick="toast('🥟 Added — earn 280 pts!')">
-        <div class="item-emoji">🥟</div>
-        <div class="item-info">
-          <div class="item-name">Yuca Gnocchi</div>
-          <div class="item-desc">Truffle oil, parmesan, roasted garlic</div>
-          <div class="item-tags"><span class="tag veg">Vegetarian</span></div>
-        </div>
-        <div class="item-price">$28</div>
-      </div>
-      <div class="menu-item" data-cat="cocktail" onclick="toast('🍸 Added — earn 180 pts!')">
-        <div class="item-emoji">🍸</div>
-        <div class="item-info">
-          <div class="item-name">Andean Negroni</div>
-          <div class="item-desc">Pisco, aperol, quinoa-infused vermouth</div>
-          <div class="item-tags"><span class="tag">Signature</span></div>
-        </div>
-        <div class="item-price">$18</div>
-      </div>
-      <div class="menu-item" data-cat="cocktail" onclick="toast('🍹 Added — earn 160 pts!')">
-        <div class="item-emoji">🍹</div>
-        <div class="item-info">
-          <div class="item-name">Maracuyá Sour</div>
-          <div class="item-desc">Passion fruit, pisco, egg white, lime</div>
-          <div class="item-tags"><span class="tag">Signature</span></div>
-        </div>
-        <div class="item-price">$16</div>
-      </div>
-      <div class="menu-item" data-cat="dessert" onclick="toast('☁️ Added — earn 130 pts!')">
-        <div class="item-emoji">☁️</div>
-        <div class="item-info">
-          <div class="item-name">Tres Leches Cloud</div>
-          <div class="item-desc">Airy tres leches, chantilly, seasonal berries</div>
-          <div class="item-tags"><span class="tag veg">Vegetarian</span></div>
-        </div>
-        <div class="item-price">$13</div>
-      </div>
-      <div class="menu-item" data-cat="dessert" onclick="toast('🍫 Added — earn 140 pts!')">
-        <div class="item-emoji">🍫</div>
-        <div class="item-info">
-          <div class="item-name">Cacao & Laurel</div>
-          <div class="item-desc">Venezuelan chocolate, bay leaf ice cream</div>
-          <div class="item-tags"><span class="tag veg">Vegetarian</span></div>
-        </div>
-        <div class="item-price">$14</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- REWARDS -->
-  <div id="screen-rewards" class="screen">
-    <div class="page-header">
-      <h1>Rewards</h1>
-      <p>720 pts available · Platinum at 1,000</p>
-    </div>
-    <div class="section"><div class="section-title">Available Now</div></div>
-    <div class="rewards-grid">
-      <div class="reward-card unlocked" onclick="toast('🍹 Welcome Cocktail redeemed!')">
-        <div class="reward-emoji">🍹</div>
-        <div class="reward-name">Welcome Cocktail</div>
-        <div class="reward-pts">400 pts</div>
-        <div class="reward-status">✓ Redeem now</div>
-      </div>
-      <div class="reward-card unlocked" onclick="toast('🍫 Free Dessert redeemed!')">
-        <div class="reward-emoji">🍫</div>
-        <div class="reward-name">Free Dessert</div>
-        <div class="reward-pts">600 pts</div>
-        <div class="reward-status">✓ Redeem now</div>
-      </div>
-    </div>
-    <div class="section" style="margin-top:10px"><div class="section-title">Coming Up</div></div>
-    <div class="rewards-grid">
-      <div class="reward-card" onclick="toast('Need 1,280 more pts for Chef\'s Table')">
-        <div class="reward-locked">🔒</div>
-        <div class="reward-emoji">👨‍🍳</div>
-        <div class="reward-name">Chef's Table</div>
-        <div class="reward-pts">2,000 pts</div>
-      </div>
-      <div class="reward-card" onclick="toast('Need 780 more pts for Private Tasting')">
-        <div class="reward-locked">🔒</div>
-        <div class="reward-emoji">🌟</div>
-        <div class="reward-name">Private Tasting</div>
-        <div class="reward-pts">3,500 pts</div>
-      </div>
-      <div class="reward-card" onclick="toast('Need 780 more pts for Latin Wine Dinner')">
-        <div class="reward-locked">🔒</div>
-        <div class="reward-emoji">🍷</div>
-        <div class="reward-name">Wine Dinner</div>
-        <div class="reward-pts">1,200 pts</div>
-      </div>
-      <div class="reward-card" onclick="toast('Need 80 more pts for Cacao Tasting')">
-        <div class="reward-locked">🔒</div>
-        <div class="reward-emoji">🍫</div>
-        <div class="reward-name">Cacao Tasting</div>
-        <div class="reward-pts">800 pts</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHAT -->
-  <div id="screen-chat" class="screen">
-    <div class="chat-header">
-      <div class="chat-avatar">🤖</div>
-      <div>
-        <div class="chat-name">Lucia</div>
-        <div class="chat-status">● Online · AI Concierge</div>
-      </div>
-    </div>
-    <div class="chat-messages" id="chat-messages">
-      <div class="msg bot">
-        <div class="msg-bubble">¡Hola Alex! I'm Lucia, your personal dining concierge. I can help with menu recommendations, points, reservations, or tell you the story behind any dish. How can I help tonight? 🌟</div>
-        <div class="msg-time">Just now</div>
-      </div>
-    </div>
-    <div class="chat-suggestions" id="suggestions">
-      <button class="suggestion" onclick="quickSend(this)">What should I order?</button>
-      <button class="suggestion" onclick="quickSend(this)">How do I earn more points?</button>
-      <button class="suggestion" onclick="quickSend(this)">Tell me about the ceviche</button>
-      <button class="suggestion" onclick="quickSend(this)">Best cocktail for tonight?</button>
-    </div>
-  </div>
-
-  <!-- NAV -->
-  <nav class="nav" id="nav">
-    <button class="nav-btn" onclick="showTab('home')"><span class="icon">🏠</span>Home</button>
-    <button class="nav-btn" onclick="showTab('menu')"><span class="icon">🍽️</span>Menu</button>
-    <button class="nav-btn" onclick="showTab('rewards')"><span class="icon">✦</span>Rewards</button>
-    <button class="nav-btn" onclick="showTab('chat')"><span class="icon">🤖</span>Lucia</button>
-  </nav>
-
-  <!-- CHAT INPUT -->
-  <div class="chat-input-area" id="chat-input-area">
-    <textarea class="chat-input" id="chat-input" placeholder="Ask Lucia anything..." rows="1"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
-      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
-    <button class="send-btn" onclick="sendMsg()">➤</button>
-  </div>
-
-  <div class="toast" id="toast"></div>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-glow"></div>
+  <div class="splash-num">7</div>
+  <div class="splash-line"></div>
+  <div class="splash-name">Seven Reasons</div>
+  <div class="splash-sub">Latin-inspired · Washington DC</div>
 </div>
 
+<!-- HOME -->
+<div class="screen" id="screen-home">
+  <div class="home-hero">
+    <div class="hero-label">Welcome back</div>
+    <div class="hero-row">
+      <div class="hero-name">Good evening,<br><span>Alex</span></div>
+      <div class="hero-streak">🔥 5-visit streak</div>
+    </div>
+  </div>
+
+  <div class="points-card">
+    <div class="pc-top">
+      <div class="pc-logo">Seven Reasons</div>
+      <div class="pc-tier">✦ Gold</div>
+    </div>
+    <div class="pc-pts">720</div>
+    <div class="pc-pts-lbl">LOYALTY POINTS</div>
+    <div class="pc-bar-wrap">
+      <div class="pc-bar-labels"><span>720 pts</span><span>Platinum at 1,000</span></div>
+      <div class="pc-bar"><div class="pc-bar-fill"></div></div>
+    </div>
+    <div class="pc-name">Alex Chen · 23 visits</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-title">Quick Actions</div>
+    </div>
+  </div>
+  <div class="qa-grid">
+    <div class="qa-card" onclick="showTab('menu')">
+      <div class="qa-icon">🍽️</div>
+      <div class="qa-title">View Menu</div>
+      <div class="qa-sub">Earn 10 pts per $1 spent</div>
+    </div>
+    <div class="qa-card" onclick="showTab('chat')">
+      <div class="qa-icon">🤖</div>
+      <div class="qa-title">Ask Lucia</div>
+      <div class="qa-sub">Your AI dining concierge</div>
+    </div>
+    <div class="qa-card" onclick="redeemReward('Welcome Cocktail',400)">
+      <div class="qa-icon">🍹</div>
+      <div class="qa-title">Redeem Cocktail</div>
+      <div class="qa-sub">400 pts · Available now</div>
+    </div>
+    <div class="qa-card" onclick="showTab('events')">
+      <div class="qa-icon">🎭</div>
+      <div class="qa-title">Events</div>
+      <div class="qa-sub">3 upcoming this month</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-title">Upcoming Events</div>
+      <div class="sec-link" onclick="showTab('events')">See all →</div>
+    </div>
+  </div>
+  <div class="events-scroll">
+    <div class="ev-card" onclick="showTab('events')">
+      <div class="ev-date">May 3</div>
+      <div class="ev-name">Latin Wine Dinner</div>
+      <div class="ev-pts">1,200 pts required</div>
+      <div class="ev-tag locked">Need 480 more pts</div>
+    </div>
+    <div class="ev-card" onclick="showTab('events')">
+      <div class="ev-date">May 7</div>
+      <div class="ev-name">Cacao Heritage Tasting</div>
+      <div class="ev-pts">800 pts required</div>
+      <div class="ev-tag locked">Need 80 more pts</div>
+    </div>
+    <div class="ev-card" onclick="showTab('events')">
+      <div class="ev-date">May 10</div>
+      <div class="ev-name">Chef's Table Night</div>
+      <div class="ev-pts">2,000 pts required</div>
+      <div class="ev-tag locked">Need 1,280 more pts</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-title">Recent Activity</div>
+    </div>
+  </div>
+  <div class="activity-list">
+    <div class="act-item">
+      <div class="act-icon">🍽️</div>
+      <div class="act-info">
+        <div class="act-title">Dinner at Seven Reasons</div>
+        <div class="act-sub">Apr 20 · Duck Pabellón, Ceviche Negro</div>
+      </div>
+      <div class="act-pts">+420 pts</div>
+    </div>
+    <div class="act-item">
+      <div class="act-icon">🍹</div>
+      <div class="act-info">
+        <div class="act-title">Welcome Cocktail Redeemed</div>
+        <div class="act-sub">Apr 15 · Imperfecto</div>
+      </div>
+      <div class="act-pts" style="color:var(--red)">-400 pts</div>
+    </div>
+    <div class="act-item">
+      <div class="act-icon">🍽️</div>
+      <div class="act-info">
+        <div class="act-title">Dinner at Imperfecto</div>
+        <div class="act-sub">Apr 10 · Lamb Lo Mein, Cocktails</div>
+      </div>
+      <div class="act-pts">+540 pts</div>
+    </div>
+  </div>
+  <div style="height:8px"></div>
+</div>
+
+<!-- MENU -->
+<div class="screen" id="screen-menu">
+  <div class="pg-head">
+    <h1>Dine & Earn</h1>
+    <p>10 pts per $1 · Tap + to add to your order</p>
+  </div>
+  <div class="menu-search">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="menu-search" placeholder="Search dishes..." oninput="searchMenu(this.value)">
+    </div>
+  </div>
+  <div class="menu-filters">
+    <button class="mf-btn active" onclick="filterMenu('all',this)">All</button>
+    <button class="mf-btn" onclick="filterMenu('starter',this)">Starters</button>
+    <button class="mf-btn" onclick="filterMenu('main',this)">Mains</button>
+    <button class="mf-btn" onclick="filterMenu('cocktail',this)">Cocktails</button>
+    <button class="mf-btn" onclick="filterMenu('dessert',this)">Desserts</button>
+    <button class="mf-btn" onclick="filterMenu('veg',this)">Vegetarian</button>
+  </div>
+  <div class="menu-list" id="menu-list">
+    <div class="dish" data-cat="starter" data-name="patacon pina colada fried plantains">
+      <div class="dish-emoji">🍌</div>
+      <div class="dish-info">
+        <div class="dish-name">Patacón Piña Colada</div>
+        <div class="dish-desc">Fried green plantains, pickled pineapple, cilantro mojo, caper mayo</div>
+        <div class="dish-tags"><span class="dtag veg">Vegetarian</span><span class="dtag chef">Chef's Pick</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$18</div><div class="dish-earn">Earn 180 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Patacón Piña Colada',18,180)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="starter" data-name="arepita threesome mini arepas">
+      <div class="dish-emoji">🫓</div>
+      <div class="dish-info">
+        <div class="dish-name">Arepita Threesome</div>
+        <div class="dish-desc">Three mini arepas with rotating seasonal toppings</div>
+        <div class="dish-tags"><span class="dtag chef">Seasonal</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$16</div><div class="dish-earn">Earn 160 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Arepita Threesome',16,160)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="starter" data-name="ceviche negro squid ink fish">
+      <div class="dish-emoji">🐟</div>
+      <div class="dish-info">
+        <div class="dish-name">Ceviche Negro</div>
+        <div class="dish-desc">Squid ink leche de tigre, Peruvian chilis, corn, fresh market fish</div>
+        <div class="dish-tags"><span class="dtag spicy">Spicy</span><span class="dtag chef">Chef's Pick</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$22</div><div class="dish-earn">Earn 220 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Ceviche Negro',22,220)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="main" data-name="lamb lo mein noodles braised">
+      <div class="dish-emoji">🍜</div>
+      <div class="dish-info">
+        <div class="dish-name">Lamb Lo Mein</div>
+        <div class="dish-desc">Spicy passion fruit garlic sauce, slow-braised lamb, crispy shallots</div>
+        <div class="dish-tags"><span class="dtag spicy">Spicy</span><span class="dtag chef">Chef's Pick</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$36</div><div class="dish-earn">Earn 360 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Lamb Lo Mein',36,360)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="main" data-name="duck pabellon confit plantains">
+      <div class="dish-emoji">🦆</div>
+      <div class="dish-info">
+        <div class="dish-name">Duck Pabellón</div>
+        <div class="dish-desc">Confit duck, black beans, sweet plantains, crispy rice</div>
+        <div class="dish-tags"><span class="dtag chef">Chef's Pick</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$42</div><div class="dish-earn">Earn 420 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Duck Pabellón',42,420)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="main veg" data-name="yuca gnocchi truffle vegetarian">
+      <div class="dish-emoji">🥟</div>
+      <div class="dish-info">
+        <div class="dish-name">Yuca Gnocchi</div>
+        <div class="dish-desc">Truffle oil, aged parmesan, roasted garlic, fresh herbs</div>
+        <div class="dish-tags"><span class="dtag veg">Vegetarian</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$28</div><div class="dish-earn">Earn 280 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Yuca Gnocchi',28,280)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="cocktail" data-name="andean negroni pisco">
+      <div class="dish-emoji">🍸</div>
+      <div class="dish-info">
+        <div class="dish-name">Andean Negroni</div>
+        <div class="dish-desc">Pisco, aperol, quinoa-infused vermouth, orange</div>
+        <div class="dish-tags"><span class="dtag chef">Signature</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$18</div><div class="dish-earn">Earn 180 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Andean Negroni',18,180)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="cocktail" data-name="maracuya sour passion fruit pisco">
+      <div class="dish-emoji">🍹</div>
+      <div class="dish-info">
+        <div class="dish-name">Maracuyá Sour</div>
+        <div class="dish-desc">Passion fruit, pisco, egg white, lime, angostura</div>
+        <div class="dish-tags"><span class="dtag chef">Signature</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$16</div><div class="dish-earn">Earn 160 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Maracuyá Sour',16,160)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="dessert veg" data-name="tres leches cloud cream berries">
+      <div class="dish-emoji">☁️</div>
+      <div class="dish-info">
+        <div class="dish-name">Tres Leches Cloud</div>
+        <div class="dish-desc">Airy tres leches cake, chantilly, seasonal berries</div>
+        <div class="dish-tags"><span class="dtag veg">Vegetarian</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$13</div><div class="dish-earn">Earn 130 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Tres Leches Cloud',13,130)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="dish" data-cat="dessert veg" data-name="cacao laurel chocolate venezuelan">
+      <div class="dish-emoji">🍫</div>
+      <div class="dish-info">
+        <div class="dish-name">Cacao & Laurel</div>
+        <div class="dish-desc">Venezuelan chocolate mousse, bay leaf ice cream, gold leaf</div>
+        <div class="dish-tags"><span class="dtag veg">Vegetarian</span><span class="dtag chef">Chef's Pick</span></div>
+        <div class="dish-foot">
+          <div><div class="dish-price">$14</div><div class="dish-earn">Earn 140 pts</div></div>
+          <button class="add-btn" onclick="addToCart(this,'Cacao & Laurel',14,140)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cart-bar" id="cart-bar" onclick="checkout()">
+    <div class="cart-info">
+      <div class="cart-count" id="cart-count">0 items</div>
+      <div class="cart-pts" id="cart-pts">+0 pts to earn</div>
+    </div>
+    <div class="cart-total" id="cart-total">$0</div>
+    <div class="cart-cta">Checkout →</div>
+  </div>
+</div>
+
+<!-- EVENTS -->
+<div class="screen" id="screen-events">
+  <div class="pg-head">
+    <h1>Events</h1>
+    <p>Exclusive experiences · Redeem with points</p>
+  </div>
+  <div class="ev-hero">
+    <div class="ev-big" onclick="bookEvent('Latin Wine Dinner',1200)">
+      <div class="ev-big-emoji">🍷</div>
+      <div class="ev-big-label">Featured · May 3</div>
+      <div class="ev-big-name">Latin Wine Dinner</div>
+      <div class="ev-big-date">Seven Reasons · 931 H St NW · 7:00 PM</div>
+      <div class="ev-big-pts">✦ 1,200 pts · Need 480 more</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="sec-hd"><div class="sec-title">All Events</div></div>
+  </div>
+  <div class="ev-list">
+    <div class="ev-row" onclick="bookEvent('Cacao Heritage Tasting',800)">
+      <div class="ev-row-emoji">🍫</div>
+      <div class="ev-row-info">
+        <div class="ev-row-name">Cacao Heritage Tasting</div>
+        <div class="ev-row-date">May 7 · Imperfecto · 6:30 PM</div>
+        <span class="ev-status locked">Need 80 more pts</span>
+      </div>
+      <div class="ev-row-pts">800 pts</div>
+    </div>
+    <div class="ev-row" onclick="bookEvent('Chef\'s Table Night',2000)">
+      <div class="ev-row-emoji">👨‍🍳</div>
+      <div class="ev-row-info">
+        <div class="ev-row-name">Chef's Table Night</div>
+        <div class="ev-row-date">May 10 · Seven Reasons · 8:00 PM</div>
+        <span class="ev-status locked">Need 1,280 more pts</span>
+      </div>
+      <div class="ev-row-pts">2,000 pts</div>
+    </div>
+    <div class="ev-row" onclick="bookEvent('Surreal Brunch',400)">
+      <div class="ev-row-emoji">🌅</div>
+      <div class="ev-row-info">
+        <div class="ev-row-name">Surreal Weekend Brunch</div>
+        <div class="ev-row-date">May 18 · Surreal Global Kitchen · 11 AM</div>
+        <span class="ev-status open">✓ You qualify!</span>
+      </div>
+      <div class="ev-row-pts">400 pts</div>
+    </div>
+    <div class="ev-row" onclick="bookEvent('Cocktail Masterclass',600)">
+      <div class="ev-row-emoji">🍸</div>
+      <div class="ev-row-info">
+        <div class="ev-row-name">Cocktail Masterclass</div>
+        <div class="ev-row-date">May 22 · Quadrant Bar · 7:00 PM</div>
+        <span class="ev-status open">✓ You qualify!</span>
+      </div>
+      <div class="ev-row-pts">600 pts</div>
+    </div>
+    <div class="ev-row" onclick="bookEvent('Private Tasting',3500)">
+      <div class="ev-row-emoji">🌟</div>
+      <div class="ev-row-info">
+        <div class="ev-row-name">Private Chef Tasting</div>
+        <div class="ev-row-date">May 30 · Seven Reasons · Exclusive</div>
+        <span class="ev-status locked">Need 2,780 more pts</span>
+      </div>
+      <div class="ev-row-pts">3,500 pts</div>
+    </div>
+  </div>
+</div>
+
+<!-- REWARDS -->
+<div class="screen" id="screen-rewards">
+  <div class="pg-head">
+    <h1>Rewards</h1>
+    <p>720 pts available · Platinum at 1,000</p>
+  </div>
+  <div class="section">
+    <div class="sec-hd"><div class="sec-title">Available Now</div></div>
+  </div>
+  <div class="rewards-grid">
+    <div class="rw-card unlocked" onclick="redeemReward('Welcome Cocktail',400)">
+      <span class="rw-emoji">🍹</span>
+      <div class="rw-name">Welcome Cocktail</div>
+      <div class="rw-pts">400 pts</div>
+      <div class="rw-status ok">✓ Redeem now</div>
+    </div>
+    <div class="rw-card unlocked" onclick="redeemReward('Free Dessert',600)">
+      <span class="rw-emoji">🍫</span>
+      <div class="rw-name">Free Dessert</div>
+      <div class="rw-pts">600 pts</div>
+      <div class="rw-status ok">✓ Redeem now</div>
+    </div>
+  </div>
+  <div class="section" style="margin-top:10px">
+    <div class="sec-hd"><div class="sec-title">Locked</div></div>
+  </div>
+  <div class="rewards-grid">
+    <div class="rw-card" onclick="toast('Need 480 more pts for Latin Wine Dinner')">
+      <div class="rw-lock">🔒</div>
+      <span class="rw-emoji">🍷</span>
+      <div class="rw-name">Wine Dinner</div>
+      <div class="rw-pts">1,200 pts</div>
+      <div class="rw-status locked">Need 480 pts</div>
+    </div>
+    <div class="rw-card" onclick="toast('Need 80 more pts for Cacao Tasting')">
+      <div class="rw-lock">🔒</div>
+      <span class="rw-emoji">🍫</span>
+      <div class="rw-name">Cacao Tasting</div>
+      <div class="rw-pts">800 pts</div>
+      <div class="rw-status locked">Need 80 pts</div>
+    </div>
+    <div class="rw-card" onclick="toast('Need 1,280 more pts for Chef\'s Table')">
+      <div class="rw-lock">🔒</div>
+      <span class="rw-emoji">👨‍🍳</span>
+      <div class="rw-name">Chef's Table</div>
+      <div class="rw-pts">2,000 pts</div>
+      <div class="rw-status locked">Need 1,280 pts</div>
+    </div>
+    <div class="rw-card" onclick="toast('Need 780 more pts for SR Apron')">
+      <div class="rw-lock">🔒</div>
+      <span class="rw-emoji">👘</span>
+      <div class="rw-name">SR Apron</div>
+      <div class="rw-pts">1,500 pts</div>
+      <div class="rw-status locked">Need 780 pts</div>
+    </div>
+    <div class="rw-card" onclick="toast('Need 2,780 more pts for Private Tasting')">
+      <div class="rw-lock">🔒</div>
+      <span class="rw-emoji">🌟</span>
+      <div class="rw-name">Private Tasting</div>
+      <div class="rw-pts">3,500 pts</div>
+      <div class="rw-status locked">Need 2,780 pts</div>
+    </div>
+    <div class="rw-card" onclick="toast('Need 3,280 more pts for Platinum Dinner')">
+      <div class="rw-lock">🔒</div>
+      <span class="rw-emoji">💎</span>
+      <div class="rw-name">Platinum Dinner</div>
+      <div class="rw-pts">4,000 pts</div>
+      <div class="rw-status locked">Need 3,280 pts</div>
+    </div>
+  </div>
+  <div style="height:8px"></div>
+</div>
+
+<!-- CHAT -->
+<div class="screen" id="screen-chat">
+  <div class="chat-head">
+    <div class="chat-av">🤖</div>
+    <div>
+      <div class="chat-av-name">Lucia</div>
+      <div class="chat-av-status">● Online · AI Dining Concierge</div>
+    </div>
+  </div>
+  <div class="chat-msgs" id="chat-msgs">
+    <div class="msg bot">
+      <div class="msg-bub">¡Hola Alex! I'm Lucia, your personal dining concierge at Seven Reasons. I can help with menu picks, points & rewards, reservations, or the story behind any dish. How can I make your evening special? 🌟</div>
+      <div class="msg-time">Just now</div>
+    </div>
+  </div>
+  <div class="chat-sugg" id="chat-sugg">
+    <button class="sugg-btn" onclick="quickSend(this)">What should I order?</button>
+    <button class="sugg-btn" onclick="quickSend(this)">How close am I to Platinum?</button>
+    <button class="sugg-btn" onclick="quickSend(this)">Tell me about the ceviche</button>
+    <button class="sugg-btn" onclick="quickSend(this)">Best cocktail tonight?</button>
+    <button class="sugg-btn" onclick="quickSend(this)">Book a table</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <button class="nav-btn" onclick="showTab('home')"><span class="ni">🏠</span>Home</button>
+  <button class="nav-btn" onclick="showTab('menu')">
+    <span class="ni">🍽️</span>Menu
+    <span class="nav-badge" id="cart-badge">0</span>
+  </button>
+  <button class="nav-btn" onclick="showTab('events')"><span class="ni">🎭</span>Events</button>
+  <button class="nav-btn" onclick="showTab('rewards')"><span class="ni">✦</span>Rewards</button>
+  <button class="nav-btn" onclick="showTab('chat')"><span class="ni">🤖</span>Lucia</button>
+</nav>
+
+<!-- CHAT INPUT -->
+<div class="chat-input-wrap" id="chat-input-wrap">
+  <textarea class="chat-input" id="chat-input" placeholder="Ask Lucia anything..." rows="1"
+    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+    oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+  <button class="send-btn" onclick="sendMsg()">➤</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-  let history = [];
+let chatHistory = [];
+let cartCount = 0, cartTotal = 0, cartPts = 0;
 
-  // Boot: show splash then go to home
-  setTimeout(() => showTab('home'), 2000);
+// Boot
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hidden');
+  setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600);
+  showTab('home');
+}, 2000);
 
-  function showTab(tab) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + tab).classList.add('active');
+function showTab(tab) {
+  // Reset all screens scroll & hide
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.scrollTop = 0;
+  });
 
-    const nav = document.getElementById('nav');
-    nav.classList.add('visible');
-    nav.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  // Show selected
+  const screen = document.getElementById('screen-' + tab);
+  screen.classList.add('active');
+  screen.scrollTop = 0;
 
-    const map = { home: 0, menu: 1, rewards: 2, chat: 3 };
-    if (map[tab] !== undefined) nav.querySelectorAll('.nav-btn')[map[tab]].classList.add('active');
+  // Nav
+  const nav = document.getElementById('nav');
+  nav.classList.add('visible');
+  nav.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const tabs = ['home','menu','events','rewards','chat'];
+  const idx = tabs.indexOf(tab);
+  if (idx >= 0) nav.querySelectorAll('.nav-btn')[idx].classList.add('active');
 
-    const chatInput = document.getElementById('chat-input-area');
-    if (tab === 'chat') {
-      chatInput.classList.add('visible');
-      setTimeout(() => {
-        const msgs = document.getElementById('chat-messages');
-        msgs.scrollTop = msgs.scrollHeight;
-      }, 50);
-    } else {
-      chatInput.classList.remove('visible');
-    }
+  // Chat input
+  const ci = document.getElementById('chat-input-wrap');
+  if (tab === 'chat') {
+    ci.classList.add('visible');
+    setTimeout(() => {
+      const msgs = document.getElementById('chat-msgs');
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 50);
+  } else {
+    ci.classList.remove('visible');
   }
+}
 
-  function filterMenu(cat, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.menu-item').forEach(item => {
-      item.classList.toggle('hidden', cat !== 'all' && item.dataset.cat !== cat);
+// Menu search
+function searchMenu(q) {
+  const term = q.toLowerCase().trim();
+  document.querySelectorAll('.dish').forEach(d => {
+    const name = d.dataset.name || '';
+    d.classList.toggle('hidden', term !== '' && !name.includes(term));
+  });
+  // Reset filter buttons
+  if (term !== '') {
+    document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
+  }
+}
+
+// Menu filter
+function filterMenu(cat, btn) {
+  document.getElementById('menu-search').value = '';
+  document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.dish').forEach(d => {
+    if (cat === 'all') { d.classList.remove('hidden'); return; }
+    const cats = d.dataset.cat || '';
+    d.classList.toggle('hidden', !cats.includes(cat));
+  });
+}
+
+// Cart
+function addToCart(btn, name, price, pts) {
+  cartCount++; cartTotal += price; cartPts += pts;
+  btn.textContent = '✓';
+  btn.classList.add('added');
+  setTimeout(() => { btn.textContent = '+'; btn.classList.remove('added'); }, 1200);
+
+  document.getElementById('cart-count').textContent = cartCount + (cartCount === 1 ? ' item' : ' items');
+  document.getElementById('cart-total').textContent = '$' + cartTotal;
+  document.getElementById('cart-pts').textContent = '+' + cartPts + ' pts to earn';
+  document.getElementById('cart-bar').classList.add('visible');
+
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = cartCount;
+  badge.classList.add('show');
+
+  toast('✦ Added ' + name + ' — earn ' + pts + ' pts');
+}
+
+function checkout() {
+  toast('🎉 Order placed! +' + cartPts + ' pts will be added');
+  cartCount = 0; cartTotal = 0; cartPts = 0;
+  document.getElementById('cart-bar').classList.remove('visible');
+  document.getElementById('cart-count').textContent = '0 items';
+  document.getElementById('cart-total').textContent = '$0';
+  document.getElementById('cart-pts').textContent = '+0 pts to earn';
+  document.getElementById('cart-badge').classList.remove('show');
+  document.querySelectorAll('.add-btn').forEach(b => { b.textContent = '+'; b.classList.remove('added'); });
+}
+
+// Rewards
+function redeemReward(name, pts) {
+  toast('✦ ' + name + ' redeemed for ' + pts + ' pts!');
+}
+
+// Events
+function bookEvent(name, pts) {
+  if (pts <= 720) {
+    toast('🎭 Booking ' + name + ' for ' + pts + ' pts...');
+  } else {
+    const need = pts - 720;
+    toast('Need ' + need + ' more pts for ' + name);
+  }
+}
+
+// Toast
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Chat
+function quickSend(btn) {
+  const msg = btn.textContent;
+  document.getElementById('chat-sugg').style.display = 'none';
+  sendMessage(msg);
+}
+
+function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chat-sugg').style.display = 'none';
+  sendMessage(msg);
+}
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = `<div class="msg-bub">${text}</div><div class="msg-time">Just now</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'typing'; div.id = 'typing';
+  div.innerHTML = '<div class="typing-bub"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendMessage(msg) {
+  addMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+  showTyping();
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory })
     });
-  }
-
-  function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
-
-  function quickSend(btn) {
-    const msg = btn.textContent;
-    document.getElementById('suggestions').style.display = 'none';
-    sendMessage(msg);
-  }
-
-  function sendMsg() {
-    const input = document.getElementById('chat-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-    input.value = '';
-    input.style.height = 'auto';
-    document.getElementById('suggestions').style.display = 'none';
-    sendMessage(msg);
-  }
-
-  function addMsg(role, text) {
-    const msgs = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.className = 'msg ' + role;
-    div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">Just now</div>`;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-    return div;
-  }
-
-  function showTyping() {
-    const msgs = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.className = 'msg bot';
-    div.id = 'typing';
-    div.innerHTML = '<div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
-
-  async function sendMessage(msg) {
-    addMsg('user', msg);
-    history.push({ role: 'user', content: msg });
-    showTyping();
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history })
-      });
-      const text = await res.text();
-      let data;
-      try { data = JSON.parse(text); } catch { data = { error: text.slice(0, 100) }; }
-      document.getElementById('typing')?.remove();
-      if (data.reply) {
-        history.push({ role: 'assistant', content: data.reply });
-        addMsg('bot', data.reply);
-      } else {
-        addMsg('bot', 'Error: ' + (data.error || 'Unknown error'));
-      }
-    } catch (e) {
-      document.getElementById('typing')?.remove();
-      addMsg('bot', 'Network error: ' + e.message);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { error: text.slice(0,120) }; }
+    document.getElementById('typing')?.remove();
+    if (data.reply) {
+      chatHistory.push({ role: 'assistant', content: data.reply });
+      addMsg('bot', data.reply);
+    } else {
+      addMsg('bot', 'Error: ' + (data.error || 'Unknown'));
     }
+  } catch (e) {
+    document.getElementById('typing')?.remove();
+    addMsg('bot', 'Network error: ' + e.message);
   }
+}
 </script>
 </body>
 </html>
