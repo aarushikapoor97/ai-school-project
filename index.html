@@ -662,14 +662,19 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history })
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { error: text.slice(0, 100) }; }
       document.getElementById('typing')?.remove();
-      const reply = data.reply || 'Lo siento, I had trouble connecting. Please try again!';
-      history.push({ role: 'assistant', content: reply });
-      addMsg('bot', reply);
-    } catch {
+      if (data.reply) {
+        history.push({ role: 'assistant', content: data.reply });
+        addMsg('bot', data.reply);
+      } else {
+        addMsg('bot', 'Error: ' + (data.error || 'Unknown error'));
+      }
+    } catch (e) {
       document.getElementById('typing')?.remove();
-      addMsg('bot', 'Lo siento, I had trouble connecting. Please try again!');
+      addMsg('bot', 'Network error: ' + e.message);
     }
   }
 </script>
