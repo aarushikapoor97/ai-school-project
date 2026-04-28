@@ -199,6 +199,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
 .dot { width:7px; height:7px; background:var(--muted); border-radius:50%; animation:bounce 1.2s infinite; }
 .dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 .chat-sugg { display:flex; gap:8px; padding:0 18px 10px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
 .chat-sugg::-webkit-scrollbar { display:none; }
@@ -273,15 +274,15 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
       <div class="qa-title">Ask Lucia</div>
       <div class="qa-sub">Your AI dining concierge</div>
     </div>
-    <div class="qa-card" onclick="redeemReward('Welcome Cocktail',400)">
-      <div class="qa-icon">🍹</div>
-      <div class="qa-title">Redeem Cocktail</div>
-      <div class="qa-sub">400 pts · Available now</div>
+    <div class="qa-card" onclick="openReserve()">
+      <div class="qa-icon">📅</div>
+      <div class="qa-title">Reserve a Table</div>
+      <div class="qa-sub">Book at any of our 4 venues</div>
     </div>
-    <div class="qa-card" onclick="showTab('events')">
-      <div class="qa-icon">🎭</div>
-      <div class="qa-title">Events</div>
-      <div class="qa-sub">3 upcoming this month</div>
+    <div class="qa-card" onclick="showTab('analyze')">
+      <div class="qa-icon">📸</div>
+      <div class="qa-title">Dish Analyzer</div>
+      <div class="qa-sub">AI-powered ingredient explainer</div>
     </div>
   </div>
 
@@ -662,6 +663,89 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
 </div>
 
+<!-- DISH ANALYZER -->
+<div class="screen" id="screen-analyze">
+  <div class="pg-head">
+    <h1>Dish Analyzer</h1>
+    <p>Take a photo · Lucia explains the ingredients</p>
+  </div>
+  <div style="padding:20px 18px;display:flex;flex-direction:column;gap:16px">
+    <div id="analyze-upload" style="background:var(--card);border:2px dashed var(--border);border-radius:20px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .2s" onclick="document.getElementById('photo-input').click()">
+      <div style="font-size:48px;margin-bottom:12px">📸</div>
+      <div style="font-size:15px;font-weight:600;color:var(--cream)">Upload a dish photo</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:6px">Lucia will identify ingredients & suggest pairings</div>
+      <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="analyzePhoto(this)">
+    </div>
+    <div id="analyze-preview" style="display:none">
+      <img id="preview-img" style="width:100%;border-radius:16px;border:1px solid var(--border);max-height:260px;object-fit:cover">
+    </div>
+    <div id="analyze-result" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🤖</div>
+        <div style="font-size:13px;font-weight:600;color:var(--gold)">Lucia's Analysis</div>
+      </div>
+      <div id="analyze-text" style="font-size:14px;color:var(--cream);line-height:1.6"></div>
+    </div>
+    <div id="analyze-loading" style="display:none;text-align:center;padding:20px">
+      <div style="font-size:32px;animation:spin 1s linear infinite;display:inline-block">⏳</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px">Lucia is analyzing your dish...</div>
+    </div>
+    <button id="analyze-again" style="display:none;background:none;border:1px solid var(--border);border-radius:22px;padding:12px;color:var(--muted);font-size:14px;cursor:pointer;font-family:inherit" onclick="resetAnalyze()">📸 Analyze another dish</button>
+  </div>
+</div>
+
+<!-- RESERVE MODAL -->
+<div id="reserve-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:flex-end;justify-content:center">
+  <div style="background:var(--dark);border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:430px;border-top:1px solid var(--border)">
+    <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px"></div>
+    <div style="font-size:20px;font-weight:300;color:var(--cream);margin-bottom:6px">Reserve a Table</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Choose your venue to book via OpenTable</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <a href="https://www.opentable.com/r/seven-reasons-reservations-washington-dc?restref=1126879" target="_blank" style="text-decoration:none" onclick="closeReserve()">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:28px">🌟</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--cream)">Seven Reasons</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">931 H St NW · Michelin Recommended</div>
+          </div>
+          <div style="color:var(--gold);font-size:18px">→</div>
+        </div>
+      </a>
+      <a href="https://www.opentable.com/r/imperfecto-reservations-washington?restref=1282447" target="_blank" style="text-decoration:none" onclick="closeReserve()">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:28px">🎨</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--cream)">Imperfecto</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">1124 23rd St NW · Modern Latin</div>
+          </div>
+          <div style="color:var(--gold);font-size:18px">→</div>
+        </div>
+      </a>
+      <a href="https://www.opentable.com/r/surreal-global-kitchen-reservations-arlington?restref=1241422" target="_blank" style="text-decoration:none" onclick="closeReserve()">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:28px">🌎</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--cream)">Surreal Global Kitchen</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">2117 Crystal Dr · Global Fusion</div>
+          </div>
+          <div style="color:var(--gold);font-size:18px">→</div>
+        </div>
+      </a>
+      <a href="https://www.opentable.com/r/quadrant-bar-and-lounge-reservations-washington?restref=1184953" target="_blank" style="text-decoration:none" onclick="closeReserve()">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:28px">🍸</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600;color:var(--cream)">Quadrant Bar & Lounge</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">1190 22nd St NW · Cocktail Bar</div>
+          </div>
+          <div style="color:var(--gold);font-size:18px">→</div>
+        </div>
+      </a>
+    </div>
+    <button onclick="closeReserve()" style="margin-top:16px;width:100%;background:none;border:1px solid var(--border);border-radius:22px;padding:13px;color:var(--muted);font-size:14px;cursor:pointer;font-family:inherit">Cancel</button>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav class="nav" id="nav">
   <button class="nav-btn" onclick="showTab('home')"><span class="ni">🏠</span>Home</button>
@@ -711,7 +795,7 @@ function showTab(tab) {
   const nav = document.getElementById('nav');
   nav.classList.add('visible');
   nav.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const tabs = ['home','menu','events','rewards','chat'];
+  const tabs = ['home','menu','events','rewards','chat','analyze'];
   const idx = tabs.indexOf(tab);
   if (idx >= 0) nav.querySelectorAll('.nav-btn')[idx].classList.add('active');
 
@@ -796,6 +880,62 @@ function bookEvent(name, pts) {
     const need = pts - 720;
     toast('Need ' + need + ' more pts for ' + name);
   }
+}
+
+// Reserve modal
+function openReserve() {
+  const m = document.getElementById('reserve-modal');
+  m.style.display = 'flex';
+}
+function closeReserve() {
+  document.getElementById('reserve-modal').style.display = 'none';
+}
+
+// Photo analyzer
+async function analyzePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const dataUrl = e.target.result;
+    const base64 = dataUrl.split(',')[1];
+    const mediaType = file.type || 'image/jpeg';
+
+    document.getElementById('preview-img').src = dataUrl;
+    document.getElementById('analyze-preview').style.display = 'block';
+    document.getElementById('analyze-upload').style.display = 'none';
+    document.getElementById('analyze-result').style.display = 'none';
+    document.getElementById('analyze-loading').style.display = 'block';
+    document.getElementById('analyze-again').style.display = 'none';
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mediaType })
+      });
+      const data = await res.json();
+      document.getElementById('analyze-loading').style.display = 'none';
+      document.getElementById('analyze-text').textContent = data.analysis || data.error || 'Could not analyze photo';
+      document.getElementById('analyze-result').style.display = 'block';
+      document.getElementById('analyze-again').style.display = 'block';
+    } catch (err) {
+      document.getElementById('analyze-loading').style.display = 'none';
+      document.getElementById('analyze-text').textContent = 'Network error: ' + err.message;
+      document.getElementById('analyze-result').style.display = 'block';
+      document.getElementById('analyze-again').style.display = 'block';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetAnalyze() {
+  document.getElementById('analyze-upload').style.display = 'block';
+  document.getElementById('analyze-preview').style.display = 'none';
+  document.getElementById('analyze-result').style.display = 'none';
+  document.getElementById('analyze-loading').style.display = 'none';
+  document.getElementById('analyze-again').style.display = 'none';
+  document.getElementById('photo-input').value = '';
 }
 
 // Toast
